@@ -14,9 +14,16 @@ interface Props {
   description?: string;
   /** Set on the home page so the title is not "Home · Alex Rivera". */
   bareTitle?: boolean;
+  /** The page opens on a dark full-bleed band, so the header starts light. */
+  bandHeader?: boolean;
 }
 
-const { title, description = site.description, bareTitle = false } = Astro.props;
+const {
+  title,
+  description = site.description,
+  bareTitle = false,
+  bandHeader = false,
+} = Astro.props;
 
 const pageTitle = !title
   ? `${site.name} — ${site.tagline}`
@@ -51,8 +58,7 @@ const personSchema = {
     <link rel="sitemap" href="/sitemap-index.xml" />
     <meta name="author" content={site.name} />
     <meta name="color-scheme" content="light dark" />
-    <meta name="theme-color" content="#faf8f4" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#111110" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#16140f" />
 
     <meta property="og:type" content="profile" />
     <meta property="og:site_name" content={site.name} />
@@ -70,6 +76,7 @@ const personSchema = {
     <!-- Set the theme before first paint so there is no flash. -->
     <script is:inline>
       (() => {
+        document.documentElement.classList.add('js');
         const apply = () => {
           const stored = localStorage.getItem('theme');
           const theme =
@@ -86,12 +93,38 @@ const personSchema = {
     <ClientRouter />
   </head>
 
-  <body>
+  <body class={bandHeader ? 'has-band' : undefined}>
     <a class="skip-link" href="#main">Skip to content</a>
-    <Header />
+    <Header band={bandHeader} />
     <main id="main">
       <slot />
     </main>
     <Footer />
+
+    <script>
+      // Fade sections in as they arrive. Cheap, and it makes the page feel built.
+      const reveal = () => {
+        const nodes = document.querySelectorAll('[data-reveal]');
+        if (!('IntersectionObserver' in window)) {
+          nodes.forEach((n) => n.classList.add('in'));
+          return;
+        }
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (!entry.isIntersecting) return;
+              entry.target.classList.add('in');
+              io.unobserve(entry.target);
+            });
+          },
+          { rootMargin: '0px 0px -12% 0px', threshold: 0.05 },
+        );
+        nodes.forEach((n) => io.observe(n));
+        // Failsafe: never leave anything hidden.
+        setTimeout(() => nodes.forEach((n) => n.classList.add('in')), 3000);
+      };
+      reveal();
+      document.addEventListener('astro:page-load', reveal);
+    </script>
   </body>
 </html>

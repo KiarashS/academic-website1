@@ -6,6 +6,7 @@ import { projects } from '../data/projects';
 ---
 
 <Base
+  bandHeader
   title="Projects"
   description="Open-source software and datasets released by Alex Rivera: rolling-cache, kestrel, quantbench, attention-atlas."
 >
@@ -13,117 +14,110 @@ import { projects } from '../data/projects';
     eyebrow="Software & data"
     title="Projects"
     lede="Code that outlived the paper it came from. Everything here is on GitHub under a permissive licence, and everything here is something I still answer issues about."
+    meta={`${projects.length} repositories`}
   />
 
   <div class="shell">
-    <ul class="grid">
+    <ol class="list">
       {
-        projects.map((project) => (
-          <li class="card">
-            <div class="card-top">
-              <h2 class="name mono">{project.name}</h2>
-              <span class="pill">{project.role}</span>
+        projects.map((project, i) => (
+          <li class="row" data-reveal>
+            <span class="idx label">{String(i + 1).padStart(2, '0')}</span>
+
+            <div class="main">
+              <h2 class="name">{project.name}</h2>
+              <p class="role label">{project.role}</p>
+              <ul class="tags">
+                {project.tags.map((tag) => <li class="pill">{tag}</li>)}
+              </ul>
             </div>
 
-            <p class="blurb muted">{project.blurb}</p>
-
-            {project.snippet && (
-              <pre class="snippet"><code>{project.snippet}</code></pre>
-            )}
-
-            <ul class="tags">
-              {project.tags.map((tag) => <li class="pill">{tag}</li>)}
-            </ul>
-
-            <div class="actions">
-              {project.links.map((link) => (
-                <a
-                  href={link.href}
-                  target={link.href.startsWith('http') ? '_blank' : undefined}
-                  rel="noopener"
-                >
-                  {link.label}
-                  {link.href.startsWith('http') && <Icon name="external" size={12} />}
-                </a>
-              ))}
+            <div class="side">
+              <p class="blurb muted">{project.blurb}</p>
+              {project.snippet && <pre class="snippet"><code>{project.snippet}</code></pre>}
+              <div class="actions">
+                {project.links.map((link) => (
+                  <a
+                    href={link.href}
+                    target={link.href.startsWith('http') ? '_blank' : undefined}
+                    rel="noopener"
+                  >
+                    {link.label}
+                    {link.href.startsWith('http') && <Icon name="external" size={11} />}
+                  </a>
+                ))}
+              </div>
             </div>
           </li>
         ))
       }
-    </ul>
+    </ol>
   </div>
 </Base>
 
 <style>
-  .grid {
+  .list {
     list-style: none;
     padding: 0;
-    margin: 2.5rem 0 0;
+    margin: 0;
+  }
+
+  .row {
+    position: relative;
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1.25rem;
+    grid-template-columns: 3.25rem minmax(0, 0.85fr) minmax(0, 1.15fr);
+    gap: 1.5rem clamp(1.5rem, 3vw, 3rem);
+    padding: clamp(2rem, 3.5vw, 3rem) 0;
+    border-bottom: 1px solid var(--rule);
+    transition: padding-left 0.35s var(--ease);
   }
 
-  .card {
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    padding: 1.5rem;
-    border: 1px solid var(--rule);
-    border-radius: 12px;
-    background: var(--paper-2);
-    transition:
-      border-color 0.2s var(--ease),
-      transform 0.2s var(--ease),
-      box-shadow 0.2s var(--ease);
+  .row:first-child {
+    border-top: 1px solid var(--rule);
   }
 
-  .card:hover {
-    border-color: var(--rule-strong);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
+  .row::before {
+    content: '';
+    position: absolute;
+    left: -1.5rem;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--accent);
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform 0.35s var(--ease);
   }
 
-  .card-top {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem 0.75rem;
-    margin-bottom: 0.85rem;
+  .row:hover::before {
+    transform: scaleY(1);
   }
 
-  /* Role labels run long; let them wrap rather than widen the card. */
-  .card-top .pill {
-    white-space: normal;
-    text-align: right;
+  .row:hover {
+    padding-left: 0.75rem;
+  }
+
+  .idx {
+    padding-top: 0.45rem;
+    color: var(--ink-faint);
+    transition: color 0.3s var(--ease);
+  }
+
+  .row:hover .idx {
+    color: var(--accent);
   }
 
   .name {
     font-family: var(--font-mono);
-    font-size: 1rem;
+    font-size: clamp(1.15rem, 2vw, 1.55rem);
     font-weight: 500;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.03em;
     color: var(--accent);
   }
 
-  .blurb {
-    font-size: 0.92rem;
-  }
-
-  .snippet {
-    max-width: 100%;
-    margin-top: 1rem;
-    padding: 0.75rem 0.85rem;
-    border-radius: 8px;
-    background: var(--paper-sunk);
-    border: 1px solid var(--rule);
-    overflow-x: auto;
-    font-family: var(--font-mono);
-    font-size: 0.73rem;
-    line-height: 1.6;
-    color: var(--ink-soft);
-    white-space: pre;
+  .role {
+    margin-top: 0.7rem;
+    line-height: 1.7;
   }
 
   .tags {
@@ -135,14 +129,58 @@ import { projects } from '../data/projects';
     margin: 1.1rem 0 0;
   }
 
-  .actions {
-    margin-top: auto;
-    padding-top: 1.25rem;
+  .blurb {
+    max-width: 52ch;
+    font-size: 1rem;
   }
 
-  @media (max-width: 52rem) {
-    .grid {
+  .snippet {
+    max-width: 100%;
+    margin-top: 1.1rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--rule);
+    border-left: 2px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    background: var(--paper-sunk);
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    line-height: 1.65;
+    color: var(--ink-soft);
+    white-space: pre;
+  }
+
+  .actions {
+    margin-top: 1.25rem;
+  }
+
+  @media (max-width: 58rem) {
+    .row {
+      grid-template-columns: 2.5rem minmax(0, 1fr);
+      padding-left: 0;
+    }
+
+    .row:hover {
+      padding-left: 0;
+    }
+
+    .side {
+      grid-column: 2;
+    }
+  }
+
+  @media (max-width: 40rem) {
+    .row {
       grid-template-columns: minmax(0, 1fr);
+      gap: 1rem;
+    }
+
+    .idx {
+      display: none;
+    }
+
+    .side {
+      grid-column: 1;
     }
   }
 </style>

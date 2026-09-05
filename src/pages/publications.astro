@@ -13,6 +13,7 @@ const available = kinds.filter((k) => counts[k] > 0);
 ---
 
 <Base
+  bandHeader
   title="Publications"
   description="Peer-reviewed papers, journal articles, workshop papers and preprints by Alex Rivera."
 >
@@ -45,9 +46,9 @@ const available = kinds.filter((k) => counts[k] > 0);
   <div class="shell">
     <div class="pub-list" id="pub-list">
       {
-        publications.map((pub) => (
+        publications.map((pub, i) => (
           <div class="pub-row" data-kind={pub.kind}>
-            <PublicationItem pub={pub} />
+            <PublicationItem pub={pub} index={i + 1} />
           </div>
         ))
       }
@@ -70,8 +71,6 @@ const available = kinds.filter((k) => counts[k] > 0);
         row.hidden = filter !== 'all' && row.dataset.kind !== filter;
       });
       const visible = rows.filter((r) => !r.hidden);
-      rows.forEach((r) => r.classList.remove('is-first'));
-      visible[0]?.classList.add('is-first');
       if (empty) empty.hidden = visible.length > 0;
     };
 
@@ -101,7 +100,9 @@ const available = kinds.filter((k) => counts[k] > 0);
     align-items: center;
     justify-content: space-between;
     gap: 1rem 1.5rem;
-    margin-top: 2rem;
+    margin-top: clamp(2rem, 4vw, 3rem);
+    padding-top: 1.75rem;
+    border-top: 1px solid var(--band-rule);
   }
 
   .filters {
@@ -113,47 +114,48 @@ const available = kinds.filter((k) => counts[k] > 0);
   .chip {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
-    padding: 0.35rem 0.8rem;
-    border: 1px solid var(--rule);
+    gap: 0.45rem;
+    padding: 0.45rem 0.95rem;
+    border: 1px solid var(--band-rule);
     border-radius: 999px;
-    background: var(--paper-2);
-    font-size: 0.82rem;
-    color: var(--ink-soft);
+    background: transparent;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--band-soft);
     transition:
-      color 0.15s var(--ease),
-      border-color 0.15s var(--ease),
-      background 0.15s var(--ease);
+      color 0.2s var(--ease),
+      border-color 0.2s var(--ease),
+      background 0.2s var(--ease);
   }
 
   .chip:hover {
-    border-color: var(--rule-strong);
-    color: var(--ink);
+    border-color: var(--band-ink);
+    color: var(--band-ink);
   }
 
   .chip.is-on {
     background: var(--accent);
     border-color: var(--accent);
-    color: var(--paper);
-    font-weight: 500;
+    color: #fff;
   }
 
   .count {
-    font-family: var(--font-mono);
     font-size: 0.72rem;
-    opacity: 0.65;
+    opacity: 0.6;
+  }
+
+  .toolbar :global(.arrow-link) {
+    color: var(--band-soft);
+  }
+
+  .toolbar :global(.arrow-link:hover) {
+    color: var(--accent-on-band);
   }
 
   .pub-list {
-    padding-block: 1rem 2rem;
-  }
-
-  .pub-row {
-    border-top: 1px solid var(--rule);
-  }
-
-  .pub-row.is-first {
-    border-top: none;
+    padding-block: clamp(2rem, 5vw, 4rem) 2rem;
   }
 
   .pub-row[hidden] {

@@ -1,6 +1,7 @@
 ---
 import { nav, site } from '../data/site';
 import ProfileLinks from './ProfileLinks.astro';
+import AttentionGrid from './AttentionGrid.astro';
 
 const buildDate = new Date();
 const updated = buildDate.toLocaleDateString('en-GB', {
@@ -11,26 +12,29 @@ const updated = buildDate.toLocaleDateString('en-GB', {
 const year = buildDate.getFullYear();
 ---
 
-<footer class="site-footer">
+<footer class="site-footer band">
   <div class="shell">
     <div class="grid">
       <div class="about">
-        <p class="serif">{site.name}</p>
+        <p class="wordmark">{site.name}</p>
         <p class="muted small">{site.affiliation}</p>
         <p class="small">
-          <a href={`mailto:${site.email}`}>{site.email}</a>
+          <a class="ul" href={`mailto:${site.email}`}>{site.email}</a>
         </p>
+        <div class="mark">
+          <AttentionGrid n={9} animate={false} />
+        </div>
       </div>
 
       <nav aria-label="Footer">
-        <p class="eyebrow">Pages</p>
+        <p class="label">Pages</p>
         <ul>
-          {nav.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+          {nav.map((item) => <li><a class="ul" href={item.href}>{item.label}</a></li>)}
         </ul>
       </nav>
 
       <div>
-        <p class="eyebrow">Elsewhere</p>
+        <p class="label">Elsewhere</p>
         <ProfileLinks variant="plain" />
       </div>
     </div>
@@ -44,53 +48,54 @@ const year = buildDate.getFullYear();
 
 <style>
   .site-footer {
-    border-top: 1px solid var(--rule);
-    background: var(--paper-sunk);
-    padding-block: 3rem 2rem;
+    background: var(--band-2);
+    border-top: 1px solid var(--band-rule);
+    padding-block: clamp(3rem, 6vw, 5rem) 2.5rem;
   }
 
   .grid {
     display: grid;
-    grid-template-columns: 1.6fr 1fr 1fr;
-    gap: 2.5rem;
+    grid-template-columns: 1.7fr 1fr 1fr;
+    gap: 3rem;
   }
 
-  .serif {
+  .wordmark {
     font-family: var(--font-serif);
-    font-size: 1.2rem;
-    font-variation-settings: 'opsz' 18;
-  }
-
-  .small {
-    font-size: 0.83rem;
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    font-variation-settings: 'opsz' 28;
+    letter-spacing: -0.03em;
+    color: var(--band-ink);
+    margin-bottom: 0.6rem;
   }
 
   .about p + p {
     margin-top: 0.3rem;
   }
 
+  .mark {
+    width: 6.5rem;
+    margin-top: 2rem;
+    color: var(--band-soft);
+    opacity: 0.55;
+  }
+
   nav ul,
   .grid ul {
     list-style: none;
     padding: 0;
-    margin: 0.7rem 0 0;
+    margin: 1rem 0 0;
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
-    font-size: 0.83rem;
+    gap: 0.5rem;
+    font-size: var(--t-small);
   }
 
   .grid a {
-    text-decoration: none;
-    color: var(--ink-soft);
+    color: var(--band-soft);
   }
 
-  .grid a:hover {
-    color: var(--accent);
-  }
-
-  .eyebrow + :global(*) {
-    margin-top: 0.7rem;
+  .label + :global(*) {
+    margin-top: 1rem;
   }
 
   .baseline {
@@ -98,19 +103,23 @@ const year = buildDate.getFullYear();
     flex-wrap: wrap;
     justify-content: space-between;
     gap: 0.5rem 2rem;
-    margin-top: 2.75rem;
-    padding-top: 1.25rem;
-    border-top: 1px solid var(--rule);
+    margin-top: 3.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--band-rule);
   }
 
-  @media (max-width: 47rem) {
+  @media (max-width: 52rem) {
     .grid {
       grid-template-columns: 1fr 1fr;
-      gap: 2rem 1.5rem;
+      gap: 2.25rem 1.5rem;
     }
 
     .about {
       grid-column: 1 / -1;
+    }
+
+    .mark {
+      display: none;
     }
   }
 </style>

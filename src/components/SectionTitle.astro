@@ -1,0 +1,51 @@
+---
+interface Props {
+  index: string;
+  title: string;
+  /** Rendered on the right of the rule, e.g. a link or a count. */
+  class?: string;
+}
+
+const { index, title, class: className } = Astro.props;
+---
+
+<div class:list={['head', className]} data-reveal>
+  <div class="rule-row">
+    <span class="label label--accent">{index}</span>
+    <span class="line"></span>
+    <div class="aside"><slot name="aside" /></div>
+  </div>
+  <h2>{title}</h2>
+</div>
+
+<style>
+  .head {
+    margin-bottom: clamp(2rem, 4vw, 3.5rem);
+  }
+
+  .rule-row {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding-bottom: 1.4rem;
+  }
+
+  .line {
+    flex: 1;
+    height: 1px;
+    background: var(--rule);
+  }
+
+  :global(.band) .line {
+    background: var(--band-rule);
+  }
+
+  .aside {
+    display: flex;
+    align-items: center;
+  }
+
+  .aside:empty {
+    display: none;
+  }
+</style>

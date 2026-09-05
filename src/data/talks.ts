@@ -51,7 +51,7 @@ export const talks: Talk[] = [
     location: 'Cambridge, MA',
     date: '2025-04-26',
     kind: 'poster',
-    links: [{ label: 'Poster', href: '#' }],
+    links: [{ label: 'Poster PDF', href: '#' }],
   },
   {
     title: 'Where did the entropy go?',
@@ -59,6 +59,6 @@ export const talks: Talk[] = [
     location: 'Vienna, Austria',
     date: '2024-05-08',
     kind: 'poster',
-    links: [{ label: 'Poster', href: '#' }],
+    links: [{ label: 'Poster PDF', href: '#' }],
   },
 ];

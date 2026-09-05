@@ -52,17 +52,38 @@ const { variant = 'chips' } = Astro.props;
   }
 
   .chips a {
-    padding: 0.4rem 0.8rem 0.4rem 0.65rem;
+    padding: 0.5rem 0.95rem 0.5rem 0.8rem;
     border: 1px solid var(--rule);
     border-radius: 999px;
     background: var(--paper-2);
   }
 
   .chips a:hover {
-    color: var(--accent);
-    border-color: var(--accent-edge);
-    background: var(--accent-wash);
-    transform: translateY(-1px);
+    color: #fff;
+    border-color: var(--accent);
+    background: var(--accent);
+    transform: translateY(-2px);
+  }
+
+  /* On a dark band the chips invert. */
+  :global(.band) .chips a {
+    border-color: var(--band-rule);
+    background: transparent;
+    color: var(--band-soft);
+  }
+
+  :global(.band) .chips a:hover {
+    color: #fff;
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  :global(.band) .plain a {
+    color: var(--band-soft);
+  }
+
+  :global(.band) .plain a:hover {
+    color: var(--accent-on-band);
   }
 
   .plain {

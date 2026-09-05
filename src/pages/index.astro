@@ -3,37 +3,50 @@ import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
 import ProfileLinks from '../components/ProfileLinks.astro';
 import PublicationItem from '../components/PublicationItem.astro';
+import AttentionGrid from '../components/AttentionGrid.astro';
+import Marquee from '../components/Marquee.astro';
+import SectionTitle from '../components/SectionTitle.astro';
 import { site } from '../data/site';
 import { threads } from '../data/research';
 import { publications } from '../data/publications';
 import { news } from '../data/news';
+import { talks } from '../data/talks';
+import { projects } from '../data/projects';
+import { teaching } from '../data/teaching';
 
 const selected = publications.filter((p) => p.selected).slice(0, 4);
 const recentNews = news.slice(0, 5);
+
+const venues = ['NeurIPS', 'ICML', 'ICLR', 'MLSys', 'ACL', 'EMNLP', 'TMLR'];
+
+const stats = [
+  { n: publications.length, label: 'Papers' },
+  { n: talks.length, label: 'Talks given' },
+  { n: projects.length, label: 'Tools released' },
+  { n: teaching.length, label: 'Semesters teaching' },
+];
 
 const fmt = (iso: string) =>
   new Date(iso).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
 ---
 
-<Base>
-  <!-- ------------------------------------------------------------------ -->
-  <section class="hero">
-    <div class="shell hero-grid">
+<Base bandHeader>
+  <!-- ============================ HERO ============================ -->
+  <section class="hero band" id="hero">
+    <div class="shell hero-inner">
       <div class="hero-text">
-        <p class="eyebrow">{site.tagline} · {site.location}</p>
-
-        <h1>{site.name}</h1>
-
-        <p class="lede">
-          I work on making large models cheaper to run after training: sparse attention,
-          low-bit weights, and caches that do not grow without bound.
+        <p class="label">
+          {site.tagline} <span class="tick">/</span> {site.institution} <span class="tick">/</span> 2026
         </p>
 
-        <p class="intro muted">
-          Fourth-year PhD candidate at {site.institution}, advised by{' '}
-          <a href={site.advisor.href}>{site.advisor.name}</a>. Before Northwood I read computer
-          science and mathematics at Ashfield College. This autumn I am at Halcyon Labs, writing
-          inference kernels for long-context serving.
+        <h1 class="name">
+          <span>Alex</span>
+          <span>Rivera</span>
+        </h1>
+
+        <p class="lede">
+          I make large models cheaper to run <em>after</em> they are trained: sparse
+          attention, low-bit weights, and caches that do not grow without bound.
         </p>
 
         <div class="hero-links">
@@ -41,72 +54,142 @@ const fmt = (iso: string) =>
         </div>
       </div>
 
-      <div class="portrait-wrap">
-        <div class="portrait-plate" aria-hidden="true"></div>
+      <figure class="hero-figure">
+        <AttentionGrid n={20} />
+        <figcaption class="label">
+          Sparse causal mask <span class="tick">/</span> 2 sink columns, local band, routed blocks
+        </figcaption>
+      </figure>
+    </div>
+
+    <div class="shell">
+      <dl class="stats">
+        {
+          stats.map((stat) => (
+            <div class="stat">
+              <dt class="label">{stat.label}</dt>
+              <dd>{String(stat.n).padStart(2, '0')}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <!-- ========================== VENUES ============================ -->
+  <div class="venues band">
+    <Marquee items={venues} />
+  </div>
+
+  <!-- =========================== ABOUT ============================ -->
+  <section class="section shell about">
+    <div class="portrait-col" data-reveal>
+      <div class="portrait-frame">
         <img
-          class="portrait"
           src={site.portrait}
           width="440"
           height="520"
           alt={`Portrait of ${site.name}`}
         />
-        <p class="portrait-caption faint mono">Northwood, MA · 2026</p>
       </div>
+      <p class="label portrait-cap">Northwood, MA <span class="tick">/</span> 2026</p>
     </div>
+
+    <div class="about-text" data-reveal>
+      <p class="label label--accent">Currently</p>
+      <p class="about-lede lede">
+        Fourth-year PhD candidate at {site.institution}, advised by{' '}
+        <a class="ul" href={site.advisor.href}>{site.advisor.name}</a>. This autumn I am at
+        Halcyon Labs, writing inference kernels for long-context serving.
+      </p>
+      <div class="prose muted">
+        <p>
+          Before Northwood I read computer science and mathematics at Ashfield College, where
+          I spent a year profiling transformers on phones and came away convinced that the
+          interesting constraints are the ones you inherit rather than the ones you choose.
+        </p>
+        <p>
+          I advanced to candidacy in March 2026. The thesis argues that most of the efficiency
+          left on the table can be taken at inference time, without touching the weights.
+        </p>
+      </div>
+
+      <ul class="interests">
+        {site.interests.map((interest) => <li class="pill">{interest}</li>)}
+      </ul>
+    </div>
+
+    <dl class="facts" data-reveal>
+      <div>
+        <dt class="label">Advisor</dt>
+        <dd><a class="ul" href={site.advisor.href}>{site.advisor.name}</a></dd>
+      </div>
+      <div>
+        <dt class="label">Programme</dt>
+        <dd>PhD, year four</dd>
+      </div>
+      <div>
+        <dt class="label">Based in</dt>
+        <dd>{site.location}</dd>
+      </div>
+      <div>
+        <dt class="label">Right now</dt>
+        <dd>Halcyon Labs</dd>
+      </div>
+      <div>
+        <dt class="label">Full record</dt>
+        <dd><a class="ul" href="/cv/">Curriculum vitae</a></dd>
+      </div>
+    </dl>
   </section>
 
-  <!-- ------------------------------------------------------------------ -->
-  <section class="shell section">
-    <div class="section-head">
-      <h2>What I work on</h2>
-      <p class="eyebrow">Research</p>
-    </div>
+  <!-- ========================== RESEARCH ========================== -->
+  <section class="section shell">
+    <SectionTitle index="01" title="What I work on" />
 
     <ol class="threads">
       {
         threads.map((thread, i) => (
-          <li class="thread">
-            <span class="numeral" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
-            <h3>{thread.title}</h3>
-            <p class="muted">{thread.blurb}</p>
-            <ul class="keywords">
-              {thread.keywords.map((k) => <li class="pill">{k}</li>)}
-            </ul>
+          <li class="thread" data-reveal style={`transition-delay:${i * 90}ms`}>
+            <span class="thread-num">{String(i + 1).padStart(2, '0')}</span>
+            <div class="thread-body">
+              <h3>{thread.title}</h3>
+              <p class="muted">{thread.blurb}</p>
+              <ul class="keywords">
+                {thread.keywords.map((k) => <li class="pill">{k}</li>)}
+              </ul>
+            </div>
           </li>
         ))
       }
     </ol>
   </section>
 
-  <!-- ------------------------------------------------------------------ -->
-  <section class="shell section">
-    <div class="section-head">
-      <h2>Selected work</h2>
-      <a class="arrow-link" href="/publications/">
-        All {publications.length} publications
+  <!-- ========================= SELECTED =========================== -->
+  <section class="section shell">
+    <SectionTitle index="02" title="Selected work">
+      <a slot="aside" class="arrow-link" href="/publications/">
+        All {publications.length}
         <Icon name="arrow" size={15} />
       </a>
-    </div>
+    </SectionTitle>
 
     <div class="pub-list">
-      {selected.map((pub) => <PublicationItem pub={pub} />)}
+      {selected.map((pub, i) => <PublicationItem pub={pub} index={i + 1} />)}
     </div>
   </section>
 
-  <!-- ------------------------------------------------------------------ -->
-  <section class="shell section">
-    <div class="section-head">
-      <h2>News</h2>
-      <p class="eyebrow">Updated {fmt(news[0]!.date)}</p>
-    </div>
+  <!-- =========================== NEWS ============================= -->
+  <section class="section shell news-section">
+    <SectionTitle index="03" title="News" />
 
     <ul class="news">
       {
-        recentNews.map((item) => (
-          <li>
-            <time class="mono" datetime={item.date}>{fmt(item.date)}</time>
+        recentNews.map((item, i) => (
+          <li data-reveal style={`transition-delay:${i * 60}ms`}>
+            <time class="label" datetime={item.date}>{fmt(item.date)}</time>
             <p>
-              {item.href ? <a href={item.href}>{item.text}</a> : item.text}
+              {item.href ? <a class="ul" href={item.href}>{item.text}</a> : item.text}
             </p>
           </li>
         ))
@@ -114,248 +197,408 @@ const fmt = (iso: string) =>
     </ul>
   </section>
 
-  <!-- ------------------------------------------------------------------ -->
-  <section class="shell section contact">
-    <p class="eyebrow">Contact</p>
-    <h2>Say hello</h2>
-    <p class="lede">
-      I read everything sent to my university address. Happy to talk about efficient
-      inference, to share code or data from any of the papers, or to give feedback on a
-      draft if I have the time.
-    </p>
-    <a class="mailto" href={`mailto:${site.email}`}>
-      {site.email}
-      <Icon name="arrow" size={22} />
-    </a>
-    <p class="faint small">
-      Prospective students: I do not admit students, but Prof. Marsh takes one or two a year.
-    </p>
+  <!-- ========================== CONTACT =========================== -->
+  <section class="contact band">
+    <div class="shell">
+      <p class="label label--accent">Contact</p>
+      <a class="mailto" href={`mailto:${site.email}`}>
+        {site.email}
+        <Icon name="arrow" size={40} />
+      </a>
+      <div class="contact-cols">
+        <p class="muted">
+          I read everything sent to my university address. Happy to talk about efficient
+          inference, to share code or data from any of the papers, or to read a draft if I
+          have the time.
+        </p>
+        <p class="faint small">
+          Prospective students: I do not admit students, but Prof. Marsh takes one or two a
+          year.
+        </p>
+      </div>
+    </div>
   </section>
 </Base>
 
 <style>
-  /* ---- Hero ---- */
-  .hero {
-    padding-block: clamp(2.5rem, 7vw, 5.5rem) clamp(2rem, 5vw, 3.5rem);
-    border-bottom: 1px solid var(--rule);
+  .tick {
+    color: var(--accent-on-band);
+    padding-inline: 0.35em;
   }
 
-  .hero-grid {
+  /* ------------------------------ hero ------------------------------ */
+  .hero {
+    padding-top: clamp(7rem, 15vw, 11rem);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-inner {
     display: grid;
-    grid-template-columns: minmax(0, 1.7fr) minmax(0, 0.8fr);
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.7fr);
+    gap: clamp(2rem, 6vw, 5rem);
+    align-items: center;
+    padding-bottom: clamp(3rem, 7vw, 5.5rem);
+  }
+
+  .name {
+    display: block;
+    margin-top: 1.6rem;
+    font-size: var(--t-display);
+    font-variation-settings: 'opsz' 72;
+    line-height: 0.86;
+    letter-spacing: -0.045em;
+  }
+
+  .name span {
+    display: block;
+  }
+
+  .name span:last-child {
+    padding-left: 0.09em;
+    color: var(--accent-on-band);
+  }
+
+  .hero .lede {
+    margin-top: 2rem;
+    max-width: 32ch;
+    color: var(--band-ink);
+  }
+
+  .hero .lede em {
+    font-style: italic;
+    color: var(--accent-on-band);
+  }
+
+  .hero-links {
+    margin-top: 2.2rem;
+  }
+
+  .hero-figure {
+    color: var(--band-ink);
+    margin: 0;
+  }
+
+  .hero-figure figcaption {
+    margin-top: 1.4rem;
+    line-height: 1.7;
+    color: var(--band-faint);
+  }
+
+  /* ------------------------------ stats ----------------------------- */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    margin: 0;
+    border-top: 1px solid var(--band-rule);
+  }
+
+  .stat {
+    padding: 1.75rem 0 2.25rem;
+    border-right: 1px solid var(--band-rule);
+  }
+
+  .stat:last-child {
+    border-right: none;
+  }
+
+  .stat dd {
+    margin: 0.5rem 0 0;
+    font-family: var(--font-serif);
+    font-size: clamp(2.5rem, 6vw, 4.25rem);
+    font-variation-settings: 'opsz' 48;
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+    color: var(--band-ink);
+  }
+
+  /* ----------------------------- venues ----------------------------- */
+  .venues {
+    background: var(--band-2);
+    padding-block: 2rem;
+    border-top: 1px solid var(--band-rule);
+  }
+
+  /* ----------------------------- about ------------------------------ */
+  .about {
+    display: grid;
+    grid-template-columns: minmax(0, 0.68fr) minmax(0, 1.05fr) minmax(0, 0.42fr);
     gap: clamp(2rem, 5vw, 4rem);
     align-items: start;
   }
 
-  h1 {
-    margin-top: 0.8rem;
-    font-size: clamp(2.9rem, 8vw, 5rem);
-    font-variation-settings: 'opsz' 48;
-    line-height: 0.98;
-    letter-spacing: -0.028em;
+  .facts {
+    margin: 0;
+    border-top: 1px solid var(--ink);
   }
 
-  .lede {
-    margin-top: 1.4rem;
-    max-width: 34ch;
-    color: var(--ink);
+  .facts > div {
+    padding: 0.85rem 0;
+    border-bottom: 1px solid var(--rule);
   }
 
-  .intro {
-    margin-top: 1.1rem;
-    max-width: 58ch;
-    font-size: 0.95rem;
+  .facts dd {
+    margin: 0.3rem 0 0;
+    font-family: var(--font-serif);
+    font-size: 1.15rem;
+    font-variation-settings: 'opsz' 16;
+    letter-spacing: -0.015em;
   }
 
-  .hero-links {
-    margin-top: 1.8rem;
-  }
-
-  .portrait-wrap {
+  .portrait-frame {
     position: relative;
-    padding-top: 0.5rem;
+    border-radius: 2px;
+    overflow: hidden;
+    isolation: isolate;
   }
 
-  .portrait {
-    position: relative;
+  /* Duotone: the accent supplies the hue, the photo supplies the luminance. */
+  .portrait-frame {
+    background: var(--duotone);
+  }
+
+  .portrait-frame img {
     width: 100%;
     height: auto;
-    border-radius: 4px;
-    border: 1px solid var(--rule-strong);
-    background: var(--paper-2);
+    filter: grayscale(1) contrast(1.05);
+    mix-blend-mode: screen;
+    transition: filter 0.5s var(--ease), opacity 0.5s var(--ease);
   }
 
-  /* Offset plate behind the portrait — cheap depth, no drop shadow. */
-  .portrait-plate {
-    position: absolute;
-    inset: -0.35rem -0.85rem 1.6rem 0.85rem;
-    border: 1px solid var(--accent-edge);
-    border-radius: 4px;
-    background: var(--accent-wash);
+  .portrait-frame:hover img {
+    filter: grayscale(0) contrast(1);
+    mix-blend-mode: normal;
   }
 
-  .portrait-caption {
-    margin-top: 0.7rem;
-    font-size: 0.72rem;
-    text-align: right;
+  .portrait-cap {
+    margin-top: 1rem;
   }
 
-  /* ---- Research threads ---- */
+  .about-lede {
+    margin-top: 1.1rem;
+    max-width: 30ch;
+  }
+
+  .about-text .prose {
+    margin-top: 1.6rem;
+    font-size: 1rem;
+  }
+
+  .interests {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    list-style: none;
+    padding: 0;
+    margin: 2rem 0 0;
+  }
+
+  /* ---------------------------- threads ----------------------------- */
   .threads {
     list-style: none;
     padding: 0;
     margin: 0;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1px;
-    background: var(--rule);
-    border: 1px solid var(--rule);
-    border-radius: 12px;
-    overflow: hidden;
+    border-top: 1px solid var(--rule);
   }
 
   .thread {
-    background: var(--paper);
-    padding: 1.6rem 1.5rem 1.5rem;
-    transition: background 0.2s var(--ease);
+    display: grid;
+    grid-template-columns: 7rem minmax(0, 1fr);
+    gap: 2rem;
+    padding: clamp(1.75rem, 3vw, 2.75rem) 0;
+    border-bottom: 1px solid var(--rule);
+    margin-inline: calc(var(--gutter) * -0.5);
+    padding-inline: calc(var(--gutter) * 0.5);
+    transition: background 0.3s var(--ease);
   }
 
   .thread:hover {
     background: var(--paper-sunk);
   }
 
-  .numeral {
+  .thread-num {
     font-family: var(--font-serif);
-    font-size: 1.5rem;
-    font-variation-settings: 'opsz' 20;
+    font-size: clamp(2.5rem, 5vw, 3.75rem);
+    font-variation-settings: 'opsz' 40;
+    line-height: 0.8;
+    letter-spacing: -0.04em;
     color: var(--accent);
-    opacity: 0.65;
+    opacity: 0.32;
+    transition: opacity 0.3s var(--ease);
   }
 
-  .thread h3 {
-    margin-top: 0.5rem;
-    margin-bottom: 0.6rem;
+  .thread:hover .thread-num {
+    opacity: 1;
   }
 
-  .thread p {
-    font-size: 0.92rem;
+  .thread-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    gap: 1rem 3rem;
+    align-items: start;
+  }
+
+  .thread-body h3 {
+    max-width: 16ch;
+  }
+
+  .thread-body p {
+    max-width: 56ch;
   }
 
   .keywords {
+    grid-column: 2;
     display: flex;
     flex-wrap: wrap;
-    gap: 0.35rem;
+    gap: 0.4rem;
     list-style: none;
     padding: 0;
-    margin: 1.1rem 0 0;
+    margin: 0.25rem 0 0;
   }
 
-  /* ---- Publications ---- */
-  .pub-list {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .pub-list > :global(* + *) {
-    border-top: 1px solid var(--rule);
-  }
-
-  /* ---- News ---- */
+  /* ------------------------------ news ------------------------------ */
   .news {
     list-style: none;
     padding: 0;
     margin: 0;
-    max-width: 72ch;
+    border-top: 1px solid var(--rule);
   }
 
   .news li {
     display: grid;
-    grid-template-columns: 7.5rem 1fr;
-    gap: 1.5rem;
-    padding: 0.85rem 0;
-    border-bottom: 1px dashed var(--rule);
-  }
-
-  .news li:first-child {
-    border-top: 1px dashed var(--rule);
+    grid-template-columns: 12rem minmax(0, 1fr);
+    gap: 2rem;
+    padding: 1.4rem 0;
+    border-bottom: 1px solid var(--rule);
   }
 
   .news time {
-    font-size: 0.78rem;
-    color: var(--ink-faint);
-    padding-top: 0.15rem;
-    white-space: nowrap;
+    padding-top: 0.35rem;
   }
 
   .news p {
-    font-size: 0.94rem;
+    max-width: 62ch;
   }
 
-  /* ---- Contact ---- */
-  .contact .lede {
-    max-width: 54ch;
-    margin-top: 1rem;
-    color: var(--ink-soft);
-  }
-
-  .contact h2 {
-    margin-top: 0.6rem;
+  /* ---------------------------- contact ----------------------------- */
+  .contact {
+    padding-block: clamp(4.5rem, 9vw, 8rem);
   }
 
   .mailto {
-    display: inline-flex;
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 0.7rem;
-    margin-top: 1.6rem;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+    overflow-wrap: anywhere;
+    margin-top: 1.5rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--band-rule);
     font-family: var(--font-serif);
-    font-size: clamp(1.4rem, 3.4vw, 2.1rem);
-    font-variation-settings: 'opsz' 24;
-    letter-spacing: -0.015em;
-    text-decoration: none;
-    color: var(--accent);
-    border-bottom: 1px solid var(--accent-edge);
-    padding-bottom: 0.15rem;
+    font-size: clamp(1.45rem, 6.2vw, 4.75rem);
+    font-variation-settings: 'opsz' 48;
+    line-height: 1;
+    letter-spacing: -0.035em;
+    color: var(--band-ink);
+    transition: color 0.25s var(--ease);
   }
 
   .mailto :global(svg) {
-    transition: transform 0.2s var(--ease);
+    flex: none;
+    transition: transform 0.3s var(--ease);
+  }
+
+  .mailto:hover {
+    color: var(--accent-on-band);
   }
 
   .mailto:hover :global(svg) {
-    transform: translateX(5px);
+    transform: translateX(10px);
   }
 
-  .small {
-    font-size: 0.83rem;
-    margin-top: 1.4rem;
+  .contact-cols {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 2rem 4rem;
+    margin-top: 2.25rem;
+    max-width: 60rem;
   }
 
-  /* ---- Responsive ---- */
-  @media (max-width: 58rem) {
-    .threads {
-      grid-template-columns: 1fr;
+  /* --------------------------- responsive --------------------------- */
+  @media (max-width: 62rem) {
+    .hero-inner,
+    .about {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    /* On a phone the name comes first; the diagram follows the links. */
+    .hero-figure {
+      max-width: 20rem;
+      margin-top: 2.5rem;
+    }
+
+    .portrait-col {
+      max-width: 20rem;
+    }
+
+    .about {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .facts {
+      max-width: 26rem;
+    }
+
+    .thread-body {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .keywords {
+      grid-column: 1;
+    }
+
+    .contact-cols {
+      grid-template-columns: minmax(0, 1fr);
     }
   }
 
-  @media (max-width: 52rem) {
-    .hero-grid {
-      grid-template-columns: 1fr;
+  @media (max-width: 46rem) {
+    .stats {
+      grid-template-columns: repeat(2, 1fr);
     }
 
-    .portrait-wrap {
-      max-width: 15rem;
-      margin-top: 1rem;
+    .stat {
+      padding: 1.25rem 0 1.5rem;
     }
 
-    .portrait-caption {
-      text-align: left;
+    .stat:nth-child(2n) {
+      border-right: none;
     }
-  }
 
-  @media (max-width: 40rem) {
+    .stat:nth-child(-n + 2) {
+      border-bottom: 1px solid var(--band-rule);
+    }
+
+    .thread {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.75rem;
+    }
+
     .news li {
-      grid-template-columns: 1fr;
-      gap: 0.25rem;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.3rem;
+    }
+
+    /* The bleed on the thread rows costs more than it gives on a phone. */
+    .thread {
+      margin-inline: 0;
+      padding-inline: 0;
+    }
+
+    .mailto :global(svg) {
+      width: 26px;
+      height: 26px;
     }
   }
 </style>

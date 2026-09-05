@@ -1,37 +1,80 @@
 ---
+import AttentionGrid from './AttentionGrid.astro';
+
 interface Props {
   eyebrow: string;
   title: string;
   lede?: string;
+  /** Small caption under the diagram, e.g. a count. */
+  meta?: string;
 }
 
-const { eyebrow, title, lede } = Astro.props;
+const { eyebrow, title, lede, meta } = Astro.props;
 ---
 
-<header class="page-header">
+<header class="page-header band" id="hero">
+  <div class="shell inner">
+    <div class="text">
+      <p class="label label--accent">{eyebrow}</p>
+      <h1>{title}</h1>
+      {lede && <p class="lede muted">{lede}</p>}
+    </div>
+
+    <figure class="figure">
+      <AttentionGrid n={14} />
+      {meta && <figcaption class="label">{meta}</figcaption>}
+    </figure>
+  </div>
+
   <div class="shell">
-    <p class="eyebrow">{eyebrow}</p>
-    <h1>{title}</h1>
-    {lede && <p class="lede">{lede}</p>}
     <slot />
   </div>
 </header>
 
 <style>
   .page-header {
-    padding-block: clamp(2.5rem, 6vw, 4rem) clamp(1.75rem, 4vw, 2.75rem);
-    border-bottom: 1px solid var(--rule);
+    padding-top: clamp(7rem, 14vw, 10rem);
+    padding-bottom: clamp(2.5rem, 5vw, 4rem);
+    overflow: hidden;
+  }
+
+  .inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 14rem);
+    gap: clamp(2rem, 6vw, 5rem);
+    align-items: end;
   }
 
   h1 {
-    margin-top: 0.7rem;
-    font-size: clamp(2.3rem, 6vw, 3.6rem);
-    font-variation-settings: 'opsz' 40;
-    letter-spacing: -0.025em;
+    margin-top: 1.1rem;
+    font-size: var(--t-h1);
+    font-variation-settings: 'opsz' 60;
+    letter-spacing: -0.04em;
   }
 
   .lede {
-    margin-top: 1.1rem;
-    max-width: 56ch;
+    margin-top: 1.5rem;
+    max-width: 46ch;
+  }
+
+  .figure {
+    margin: 0;
+    color: var(--band-ink);
+    opacity: 0.9;
+  }
+
+  .figure figcaption {
+    margin-top: 1rem;
+    color: var(--band-faint);
+  }
+
+  @media (max-width: 62rem) {
+    .inner {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .figure {
+      display: none;
+    }
   }
 </style>

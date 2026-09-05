@@ -32,6 +32,7 @@ export const projects: Project[] = [
       { label: 'GitHub', href: 'https://github.com/example/kestrel' },
       { label: 'Paper', href: '/publications/#kestrel-2025' },
     ],
+    snippet: 'kestrel serve --model llama-3-70b --gpus 4 --policy mixed\n→ 1.9x throughput vs vLLM at equal p99',
   },
   {
     name: 'quantbench',
@@ -55,5 +56,6 @@ export const projects: Project[] = [
       { label: 'GitHub', href: 'https://github.com/example/attention-atlas' },
       { label: 'Demo', href: '#' },
     ],
+    snippet: 'atlas --checkpoint ./ckpt --layer 18 --head 7\n→ entropy 0.41  sink mass 0.88  (fp16: 2.10 / 0.12)',
   },
 ];

@@ -1,8 +1,9 @@
 # Academic website
 
 A personal site for a PhD student, built with [Astro](https://astro.build). Static
-output, no client framework, roughly 30 kB of JavaScript in total (a theme toggle,
-a publication filter and a copy-to-clipboard button).
+output, no client framework: one 16 kB JavaScript file (Astro's view-transition
+router) plus a few inlined kilobytes for the theme toggle, the publication filter,
+the BibTeX copy buttons and the scroll reveals.
 
 The content that ships with it is placeholder. Alex Rivera is not a real person,
 Northwood University is not a real university, and every arXiv link points at
@@ -66,7 +67,9 @@ every `bibtex` field into one downloadable file.
 2. `astro.config.mjs` — the same domain, again, in `site`.
 3. `public/robots.txt` — the sitemap URL.
 4. `public/portrait.svg` — replace with a real photo (`portrait.jpg` works; update
-   `site.portrait`). Around 880×1040 covers retina at the size it renders.
+   `site.portrait`). Around 880×1040 covers retina at the size it renders. It is
+   rendered as a duotone in the accent colour and returns to full colour on
+   hover, so a photo with a clear tonal range works better than a flat one.
 5. `public/alex-rivera-cv.pdf` — a placeholder one-pager. Overwrite it with your
    real CV and rename it, then update `site.cvPdf`. The `/cv` page also prints
    cleanly to PDF from a browser.
@@ -76,17 +79,45 @@ every `bibtex` field into one downloadable file.
 
 ## Design
 
-One accent colour, `--accent` in `src/styles/global.css`, drives every highlight.
-Change it there and the whole site follows. The rest of the palette is a warm
-paper background and a near-black ink, with a dark variant defined under
-`:root[data-theme='dark']`.
+**Two grounds.** Reading sections sit on warm paper (`--paper`); heroes, page
+headers, the contact block and the footer are full-bleed dark bands (`--band`).
+Add `class="band"` to a section and every token inside it flips — headings,
+labels, pills, chips and links all have band variants in `global.css`. The
+alternation is what gives the page its rhythm; a site that is beige from top to
+bottom reads as a document, not a design.
 
-Headings and long text use Newsreader; interface text uses Inter. Both are
-self-hosted via Fontsource, so no request leaves the reader's browser.
+**One accent.** `--accent` drives every highlight: the name, the numerals, the
+rails that slide in on hover, the filter chips. Change that one value in
+`src/styles/global.css` and the whole site follows. Bands use `--accent-on-band`,
+a lighter tint that holds up on near-black.
+
+**A type scale with real jumps in it.** `--t-display` (up to 9.5rem) down to
+`--t-label` (0.7rem), all fluid. Newsreader with optical sizing for anything
+large, Inter for interface text, and a monospace `.label` in letterspaced caps as
+the connective tissue between sections. Fonts are self-hosted via Fontsource, so
+no request leaves the reader's browser.
+
+**One graphic device.** `src/components/AttentionGrid.astro` draws a sparse
+causal attention mask — two sink columns, a local band along the diagonal, a
+scattering of routed blocks — deterministically, so it does not change between
+builds. It appears large in the hero, medium in every page header, and small and
+still in the footer. If your research is not about attention, replace this
+component with a motif that means something for your own work; the rest of the
+design does not depend on what it draws.
+
+**Full-width editorial rows.** Publications, projects, courses, talks and news
+all use the same grid: an index in the gutter, the title block, a second column
+carrying the detail, and metadata flush right. Hovering slides an accent rail in
+from the left and nudges the row over.
 
 The theme follows the operating system until a visitor clicks the toggle, after
 which the choice is remembered in `localStorage`. The inline script in
-`src/layouts/Base.astro` applies it before first paint so there is no flash.
+`src/layouts/Base.astro` applies it before first paint, so there is no flash.
+
+Sections fade in as they scroll into view. That is a progressive enhancement: the
+`opacity: 0` rule is scoped to `html.js`, a class the head script adds, so if the
+bundle never loads the page renders in full. A three-second timer reveals
+everything regardless, and `prefers-reduced-motion` turns the whole thing off.
 
 ## Deploying
 

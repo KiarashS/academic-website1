@@ -1,11 +1,13 @@
 ---
 import Base from '../layouts/Base.astro';
 import PageHeader from '../components/PageHeader.astro';
+import SectionTitle from '../components/SectionTitle.astro';
 import Icon from '../components/Icon.astro';
 import { teaching, mentoring } from '../data/teaching';
 ---
 
 <Base
+  bandHeader
   title="Teaching"
   description="Courses taught and assisted by Alex Rivera at Northwood University, plus undergraduate and master's mentoring."
 >
@@ -13,36 +15,36 @@ import { teaching, mentoring } from '../data/teaching';
     eyebrow="Teaching & mentoring"
     title="Teaching"
     lede="Five semesters in the classroom, one course co-designed from scratch. Course materials I wrote are linked where the department allows it."
+    meta={`${teaching.length} courses · ${mentoring.length} mentees`}
   />
 
   <div class="shell">
     <section class="section">
-      <div class="section-head">
-        <h2>Courses</h2>
-        <p class="eyebrow">Northwood University</p>
-      </div>
+      <SectionTitle index="01" title="Courses">
+        <span slot="aside" class="label">Northwood University</span>
+      </SectionTitle>
 
-      <ul class="courses">
+      <ol class="courses">
         {
           teaching.map((course) => (
-            <li>
-              <div class="term">
-                <span class="mono">{course.term}</span>
+            <li data-reveal>
+              <span class="term label">{course.term}</span>
+
+              <div class="course-main">
+                <h3>
+                  {course.code !== '—' && <span class="code">{course.code}</span>}
+                  {course.title}
+                </h3>
+                <p class="role">{course.role}</p>
               </div>
-              <div>
-                <div class="head">
-                  <h3>
-                    {course.code !== '—' && <span class="code mono">{course.code}</span>}
-                    {course.title}
-                  </h3>
-                  <span class="pill pill--accent">{course.role}</span>
-                </div>
-                {course.detail && <p class="muted detail">{course.detail}</p>}
+
+              <div class="course-side">
+                {course.detail && <p class="muted">{course.detail}</p>}
                 {course.href && (
                   <div class="actions">
                     <a href={course.href}>
                       Course page
-                      <Icon name="external" size={12} />
+                      <Icon name="external" size={11} />
                     </a>
                   </div>
                 )}
@@ -50,48 +52,54 @@ import { teaching, mentoring } from '../data/teaching';
             </li>
           ))
         }
-      </ul>
+      </ol>
     </section>
 
     <section class="section">
-      <div class="section-head">
-        <h2>Mentoring</h2>
-      </div>
+      <SectionTitle index="02" title="Mentoring" />
 
-      <ul class="mentees">
+      <ol class="mentees">
         {
-          mentoring.map((person) => (
-            <li>
+          mentoring.map((person, i) => (
+            <li data-reveal style={`transition-delay:${i * 80}ms`}>
+              <span class="label">{String(i + 1).padStart(2, '0')}</span>
               <p class="name">{person.name}</p>
               <p class="muted">{person.detail}</p>
             </li>
           ))
         }
-      </ul>
+      </ol>
     </section>
 
     <section class="section">
-      <div class="section-head">
-        <h2>How I teach</h2>
-      </div>
-      <div class="prose muted">
-        <p>
-          Efficiency is a subject people learn by measuring, not by reading. In CS 6480 every
-          unit ends with a lab where students profile a real model on real hardware and have to
-          explain a number that surprised them. Half of them discover that their clever kernel
-          is slower than the baseline, which is the point.
-        </p>
-        <p>
-          I write my own assignment solutions before releasing the assignment, and I keep the
-          autograder's failure messages specific enough to act on. Office hours are for
-          debugging out loud.
-        </p>
+      <SectionTitle index="03" title="How I teach" />
+
+      <div class="statement" data-reveal>
+        <blockquote>
+          Efficiency is a subject people learn by measuring, not by reading.
+        </blockquote>
+        <div class="prose muted">
+          <p>
+            In CS 6480 every unit ends with a lab where students profile a real model on real
+            hardware and have to explain a number that surprised them. Half of them discover
+            that their clever kernel is slower than the baseline, which is the point.
+          </p>
+          <p>
+            I write my own assignment solutions before releasing the assignment, and I keep the
+            autograder's failure messages specific enough to act on. Office hours are for
+            debugging out loud.
+          </p>
+        </div>
       </div>
     </section>
   </div>
 </Base>
 
 <style>
+  .section {
+    padding-block: clamp(2.75rem, 5vw, 4.5rem);
+  }
+
   .courses,
   .mentees {
     list-style: none;
@@ -101,80 +109,142 @@ import { teaching, mentoring } from '../data/teaching';
 
   .courses li {
     display: grid;
-    grid-template-columns: 8rem 1fr;
-    gap: 1.5rem;
-    padding: 1.4rem 0;
+    grid-template-columns: 8rem minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: 1rem clamp(1.5rem, 3vw, 3rem);
+    padding: clamp(1.5rem, 2.5vw, 2.25rem) 0;
     border-top: 1px solid var(--rule);
   }
 
-  .term span {
-    font-size: 0.78rem;
+  .courses li:last-child {
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .term {
+    padding-top: 0.5rem;
     color: var(--ink-faint);
   }
 
-  .head {
-    display: flex;
-    align-items: baseline;
-    flex-wrap: wrap;
-    gap: 0.5rem 0.8rem;
-  }
-
   h3 {
-    font-size: 1.15rem;
-    font-variation-settings: 'opsz' 18;
+    font-size: clamp(1.25rem, 2.2vw, 1.7rem);
   }
 
   .code {
+    display: block;
+    margin-bottom: 0.35rem;
     font-family: var(--font-mono);
-    font-size: 0.8rem;
+    font-size: 0.74rem;
+    letter-spacing: 0.1em;
     color: var(--accent);
-    margin-right: 0.5rem;
   }
 
-  .detail {
-    margin-top: 0.5rem;
-    font-size: 0.9rem;
-    max-width: 62ch;
+  .role {
+    margin-top: 0.6rem;
+    font-size: 0.88rem;
+    color: var(--ink-soft);
+  }
+
+  .course-side {
+    padding-top: 0.3rem;
+  }
+
+  .course-side p {
+    max-width: 52ch;
+    font-size: 0.97rem;
   }
 
   .actions {
-    margin-top: 0.7rem;
+    margin-top: 1rem;
   }
 
+  /* ---- mentees ---- */
   .mentees {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.25rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+    border-top: 1px solid var(--rule);
   }
 
   .mentees li {
-    padding: 1.25rem;
-    border: 1px solid var(--rule);
-    border-radius: 10px;
-    background: var(--paper-2);
+    padding: 1.75rem clamp(1.25rem, 2vw, 2rem) 2rem 0;
+    border-right: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
   }
 
-  .name {
+  .mentees li:last-child {
+    border-right: none;
+  }
+
+  .mentees .name {
+    margin: 0.9rem 0 0.5rem;
     font-family: var(--font-serif);
-    font-size: 1.05rem;
-    font-variation-settings: 'opsz' 16;
-    margin-bottom: 0.4rem;
+    font-size: 1.3rem;
+    font-variation-settings: 'opsz' 20;
+    letter-spacing: -0.02em;
   }
 
   .mentees .muted {
-    font-size: 0.87rem;
+    font-size: 0.92rem;
   }
 
-  @media (max-width: 52rem) {
+  /* ---- statement ---- */
+  .statement {
+    display: grid;
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: start;
+  }
+
+  blockquote {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    font-variation-settings: 'opsz' 32;
+    line-height: 1.18;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+
+  blockquote::before {
+    content: '';
+    display: block;
+    width: 3rem;
+    height: 2px;
+    margin-bottom: 1.5rem;
+    background: var(--accent);
+  }
+
+  @media (max-width: 62rem) {
+    .courses li {
+      grid-template-columns: 7rem minmax(0, 1fr);
+    }
+
+    .course-side {
+      grid-column: 2;
+      padding-top: 0;
+    }
+
     .mentees {
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .mentees li {
+      border-right: none;
+      padding-right: 0;
+    }
+
+    .statement {
+      grid-template-columns: minmax(0, 1fr);
     }
   }
 
   @media (max-width: 40rem) {
     .courses li {
-      grid-template-columns: 1fr;
-      gap: 0.4rem;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.5rem;
+    }
+
+    .course-side {
+      grid-column: 1;
     }
   }
 </style>

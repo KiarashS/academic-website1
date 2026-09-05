@@ -15,33 +15,36 @@ const authorLine = (authors: string[]) => authors.join(', ');
 ---
 
 <Base
+  bandHeader
   title="Curriculum vitae"
   description={`Curriculum vitae of ${site.name}: education, research experience, publications, teaching, awards and academic service.`}
 >
-  <div class="shell cv">
-    <header class="cv-head">
+  <header class="cv-head band" id="hero">
+    <div class="shell cv-head-inner">
       <div>
+        <p class="label label--accent">Curriculum vitae</p>
         <h1>{site.name}</h1>
-        <p class="muted">{site.tagline} · {site.institution}</p>
-        <p class="contact mono faint">
+        <p class="muted role">{site.tagline} <span class="tick">/</span> {site.institution}</p>
+        <p class="contact label">
           <a href={`mailto:${site.email}`}>{site.email}</a>
-          <span aria-hidden="true">·</span>
+          <span class="tick" aria-hidden="true">/</span>
           <span>{site.location}</span>
-          <span aria-hidden="true">·</span>
+          <span class="tick" aria-hidden="true">/</span>
           <a href={site.url}>{site.url.replace('https://', '')}</a>
         </p>
       </div>
 
       <div class="cv-actions no-print">
-        <a class="button" href={site.cvPdf} download>
+        <a class="btn" href={site.cvPdf} download>
           <Icon name="file" size={15} />
           PDF
         </a>
-        <button class="button" type="button" id="print-cv">
-          Print
-        </button>
+        <button class="btn" type="button" id="print-cv">Print</button>
       </div>
-    </header>
+    </div>
+  </header>
+
+  <div class="shell cv">
 
     <section class="section">
       <h2>Education</h2>
@@ -95,7 +98,7 @@ const authorLine = (authors: string[]) => authors.join(', ');
       {
         grouped.map((group) => (
           <div class="pub-group">
-            <h3 class="eyebrow">{kindLabels[group.kind]}</h3>
+            <h3 class="label label--accent">{kindLabels[group.kind]}</h3>
             <ol class="pubs">
               {group.items.map((pub) => (
                 <li>
@@ -152,15 +155,15 @@ const authorLine = (authors: string[]) => authors.join(', ');
       <h2>Service</h2>
       <div class="service">
         <div>
-          <h3 class="eyebrow">Reviewing</h3>
+          <h3 class="label label--accent">Reviewing</h3>
           <ul class="plain">{service.reviewing.map((s) => <li>{s}</li>)}</ul>
         </div>
         <div>
-          <h3 class="eyebrow">Organising</h3>
+          <h3 class="label label--accent">Organising</h3>
           <ul class="plain">{service.organising.map((s) => <li>{s}</li>)}</ul>
         </div>
         <div>
-          <h3 class="eyebrow">Outreach</h3>
+          <h3 class="label label--accent">Outreach</h3>
           <ul class="plain">{service.outreach.map((s) => <li>{s}</li>)}</ul>
         </div>
       </div>
@@ -194,43 +197,47 @@ const authorLine = (authors: string[]) => authors.join(', ');
 </script>
 
 <style>
-  .cv {
-    padding-top: clamp(2.5rem, 6vw, 4rem);
+  .cv-head {
+    padding-top: clamp(7rem, 13vw, 9.5rem);
+    padding-bottom: clamp(2.5rem, 5vw, 3.5rem);
   }
 
-  .cv-head {
+  .cv-head-inner {
     display: flex;
-    align-items: flex-start;
+    align-items: flex-end;
     justify-content: space-between;
-    gap: 1.5rem;
+    gap: 2rem;
     flex-wrap: wrap;
-    padding-bottom: 1.75rem;
+  }
+
+  .tick {
+    color: var(--accent-on-band);
+    padding-inline: 0.35em;
   }
 
   h1 {
-    font-size: clamp(2.1rem, 5vw, 3rem);
-    font-variation-settings: 'opsz' 36;
-    letter-spacing: -0.025em;
+    margin-top: 1rem;
+    font-size: var(--t-h1);
+    font-variation-settings: 'opsz' 60;
+    letter-spacing: -0.04em;
   }
 
-  .cv-head > div > p {
-    margin-top: 0.4rem;
+  .role {
+    margin-top: 0.9rem;
+    font-size: 1.05rem;
   }
 
   .contact {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
-    font-size: 0.8rem;
-  }
-
-  .contact a {
-    color: inherit;
-    text-decoration: none;
+    align-items: center;
+    gap: 0.2rem;
+    margin-top: 0.9rem;
+    line-height: 1.9;
   }
 
   .contact a:hover {
-    color: var(--accent);
+    color: var(--accent-on-band);
   }
 
   .cv-actions {
@@ -238,43 +245,24 @@ const authorLine = (authors: string[]) => authors.join(', ');
     gap: 0.5rem;
   }
 
-  .button {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.45rem 0.9rem;
-    border: 1px solid var(--rule-strong);
-    border-radius: 999px;
-    background: var(--paper-2);
-    font-size: 0.83rem;
-    color: var(--ink-soft);
-    text-decoration: none;
-    transition:
-      color 0.15s var(--ease),
-      border-color 0.15s var(--ease),
-      background 0.15s var(--ease);
-  }
-
-  .button:hover {
-    color: var(--accent);
-    border-color: var(--accent-edge);
-    background: var(--accent-wash);
+  .cv {
+    padding-top: clamp(2rem, 4vw, 3rem);
   }
 
   .section {
-    padding-block: 1.75rem;
+    padding-block: 1.9rem;
   }
 
   .section h2 {
-    font-size: 0.78rem;
-    font-family: var(--font-sans);
-    font-weight: 600;
-    letter-spacing: 0.14em;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--accent);
-    padding-bottom: 0.6rem;
-    margin-bottom: 1.1rem;
-    border-bottom: 1px solid var(--rule);
+    padding-bottom: 0.7rem;
+    margin-bottom: 1.3rem;
+    border-bottom: 1px solid var(--ink);
   }
 
   .entries {
@@ -367,6 +355,22 @@ const authorLine = (authors: string[]) => authors.join(', ');
     gap: 0.35rem;
     font-size: 0.88rem;
     color: var(--ink-soft);
+  }
+
+  @media print {
+    .cv-head {
+      padding-top: 0;
+      padding-bottom: 0.75rem;
+    }
+
+    .cv {
+      padding-top: 0;
+    }
+
+    h1 {
+      margin-top: 0.4rem;
+      font-size: 24pt;
+    }
   }
 
   @media (max-width: 46rem) {

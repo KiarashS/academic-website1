@@ -1,0 +1,161 @@
+---
+// The site's one graphic device: a sparse causal attention mask.
+// Two sink columns on the left, a local band along the diagonal, and a
+// scattering of routed blocks — the pattern the research is actually about.
+// Deterministic, so it does not change between builds.
+
+interface Props {
+  n?: number;
+  class?: string;
+  /** Sweeps a highlight down the rows, one decoding step at a time. */
+  animate?: boolean;
+}
+
+const { n = 20, class: className, animate = true } = Astro.props;
+
+const hash = (i: number, j: number) => {
+  let h = (i * 73856093) ^ (j * 19349663);
+  h = (h ^ (h >>> 13)) >>> 0;
+  return h;
+};
+
+type Cell = { i: number; j: number; kind: 'sink' | 'local' | 'routed' | 'off' };
+
+const cells: Cell[] = [];
+for (let i = 0; i < n; i++) {
+  for (let j = 0; j <= i; j++) {
+    let kind: Cell['kind'] = 'off';
+    if (j < 2) kind = 'sink';
+    else if (i - j < 3) kind = 'local';
+    else if (hash(i, j) % 11 === 0) kind = 'routed';
+    cells.push({ i, j, kind });
+  }
+}
+
+const clipId = `causal-${Math.abs(hash(n, cells.length)).toString(36)}`;
+const gap = 0.16;
+const step = 1 + gap;
+const size = n * step - gap;
+---
+
+<svg
+  class:list={['grid', className, { animate }]}
+  viewBox={`0 0 ${size} ${size}`}
+  role="img"
+  aria-label="Diagram of a sparse causal attention mask"
+  preserveAspectRatio="xMidYMid meet"
+>
+  {
+    cells.map((cell) => (
+      <rect
+        class={`c c-${cell.kind}`}
+        x={cell.j * step}
+        y={cell.i * step}
+        width="1"
+        height="1"
+        rx="0.16"
+        style={`--d:${((cell.i * 3 + cell.j * 5) % 24) * 0.09}s`}
+      />
+    ))
+  }
+  {
+    animate && (
+      <>
+        <clipPath id={clipId}>
+          <polygon points={`0,0 ${size},${size} 0,${size}`} />
+        </clipPath>
+        <rect
+          class="scan"
+          clip-path={`url(#${clipId})`}
+          x="0"
+          y="0"
+          width={size}
+          height="1"
+          rx="0.16"
+        />
+      </>
+    )
+  }
+</svg>
+
+<style>
+  .grid {
+    width: 100%;
+    height: auto;
+    overflow: hidden;
+  }
+
+  .c {
+    fill: currentColor;
+  }
+
+  .c-off {
+    opacity: 0.07;
+  }
+
+  .c-sink {
+    fill: var(--accent-on-band, var(--accent));
+    opacity: 0.85;
+  }
+
+  .c-local {
+    opacity: 0.42;
+  }
+
+  .c-routed {
+    fill: var(--accent-on-band, var(--accent));
+    opacity: 0.5;
+  }
+
+  .animate .c-routed {
+    animation: flicker 5.5s var(--ease) infinite;
+    animation-delay: var(--d);
+  }
+
+  .animate .c-local {
+    animation: breathe 7s var(--ease) infinite;
+    animation-delay: var(--d);
+  }
+
+  .scan {
+    fill: var(--accent-on-band, var(--accent));
+    opacity: 0.16;
+    animation: sweep 11s steps(20) infinite;
+  }
+
+  @keyframes flicker {
+    0%,
+    72%,
+    100% {
+      opacity: 0.5;
+    }
+    80% {
+      opacity: 0.95;
+    }
+  }
+
+  @keyframes breathe {
+    0%,
+    100% {
+      opacity: 0.42;
+    }
+    50% {
+      opacity: 0.2;
+    }
+  }
+
+  @keyframes sweep {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(2320%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .scan {
+      display: none;
+    }
+  }
+</style>

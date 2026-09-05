@@ -24,6 +24,7 @@ const fmt = (iso: string) =>
 ---
 
 <Base
+  bandHeader
   title="Talks"
   description="Conference talks, invited seminars and posters given by Alex Rivera."
 >
@@ -31,6 +32,7 @@ const fmt = (iso: string) =>
     eyebrow="Talks & posters"
     title="Talks"
     lede="Slides are usually up within a day of the talk. If a link is missing and you want the deck, email me."
+    meta={`${talks.length} talks since 2024`}
   />
 
   <div class="shell">
@@ -40,23 +42,24 @@ const fmt = (iso: string) =>
           <h2 class="year">{year}</h2>
           <ul>
             {byYear[year]!.map((talk) => (
-              <li>
+              <li data-reveal>
                 <div class="when">
-                  <time class="mono" datetime={talk.date}>{fmt(talk.date)}</time>
+                  <time class="label" datetime={talk.date}>{fmt(talk.date)}</time>
                 </div>
-                <div>
-                  <div class="head">
-                    <h3>{talk.title}</h3>
-                    <span class="pill">{kindLabel[talk.kind]}</span>
-                  </div>
+                <div class="talk-main">
+                  <h3>{talk.title}</h3>
                   <p class="muted where">
                     {talk.event}
-                    <span class="dot-sep" aria-hidden="true">·</span>
+                    <span class="dot-sep" aria-hidden="true">/</span>
                     <span class="loc">
                       <Icon name="pin" size={13} />
                       {talk.location}
                     </span>
                   </p>
+                </div>
+
+                <div class="talk-side">
+                  <span class="pill">{kindLabel[talk.kind]}</span>
                   {talk.links && (
                     <div class="actions">
                       {talk.links.map((link) => (
@@ -77,22 +80,24 @@ const fmt = (iso: string) =>
 <style>
   .year-block {
     display: grid;
-    grid-template-columns: 6rem 1fr;
-    gap: 1.5rem;
-    padding-block: 2.25rem;
-    border-bottom: 1px solid var(--rule);
+    grid-template-columns: 8rem minmax(0, 1fr);
+    gap: clamp(1.5rem, 3vw, 3rem);
+    padding-block: clamp(2.5rem, 4vw, 4rem);
+    border-top: 1px solid var(--rule);
   }
 
   .year-block:last-child {
-    border-bottom: none;
+    border-bottom: 1px solid var(--rule);
   }
 
   .year {
-    font-size: 1.35rem;
-    font-variation-settings: 'opsz' 20;
-    color: var(--ink-faint);
+    font-size: clamp(2.25rem, 4vw, 3.25rem);
+    font-variation-settings: 'opsz' 36;
+    letter-spacing: -0.04em;
+    color: var(--accent);
+    opacity: 0.35;
     position: sticky;
-    top: 5.5rem;
+    top: 7rem;
     align-self: start;
   }
 
@@ -100,37 +105,39 @@ const fmt = (iso: string) =>
     list-style: none;
     padding: 0;
     margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 1.75rem;
   }
 
   li {
     display: grid;
-    grid-template-columns: 4.5rem 1fr;
-    gap: 1rem;
+    grid-template-columns: 5rem minmax(0, 1.25fr) minmax(0, 0.75fr);
+    gap: 1rem clamp(1.25rem, 2.5vw, 2.5rem);
+    padding-block: 1.5rem;
+    border-bottom: 1px dashed var(--rule);
+  }
+
+  li:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  li:first-child {
+    padding-top: 0;
   }
 
   .when time {
-    font-size: 0.78rem;
+    display: block;
+    padding-top: 0.5rem;
     color: var(--ink-faint);
   }
 
-  .head {
-    display: flex;
-    align-items: baseline;
-    gap: 0.7rem;
-    flex-wrap: wrap;
-  }
-
   h3 {
-    font-size: 1.1rem;
-    font-variation-settings: 'opsz' 18;
+    font-size: clamp(1.2rem, 2.1vw, 1.6rem);
+    max-width: 24ch;
   }
 
   .where {
-    margin-top: 0.35rem;
-    font-size: 0.875rem;
+    margin-top: 0.55rem;
+    font-size: 0.9rem;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -140,21 +147,35 @@ const fmt = (iso: string) =>
   .loc {
     display: inline-flex;
     align-items: center;
-    gap: 0.25rem;
+    gap: 0.3rem;
     color: var(--ink-faint);
   }
 
   .dot-sep {
-    color: var(--ink-faint);
+    color: var(--accent);
   }
 
-  .actions {
-    margin-top: 0.6rem;
+  .talk-side {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.9rem;
+    padding-top: 0.35rem;
+  }
+
+  @media (max-width: 62rem) {
+    li {
+      grid-template-columns: 5rem minmax(0, 1fr);
+    }
+
+    .talk-side {
+      grid-column: 2;
+    }
   }
 
   @media (max-width: 44rem) {
     .year-block {
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
       gap: 1rem;
     }
 
@@ -163,8 +184,16 @@ const fmt = (iso: string) =>
     }
 
     li {
-      grid-template-columns: 1fr;
-      gap: 0.3rem;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.4rem;
+    }
+
+    .talk-side {
+      grid-column: 1;
+    }
+
+    .when time {
+      padding-top: 0;
     }
   }
 </style>

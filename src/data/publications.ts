@@ -177,6 +177,8 @@ export const publications: Publication[] = [
     venueLong: 'Findings of the Conference on Empirical Methods in Natural Language Processing',
     year: 2024,
     kind: 'conference',
+    summary:
+      'Compressing the KV cache preserves needle-in-a-haystack retrieval and quietly destroys multi-hop reasoning over the same context.',
     links: [
       { label: 'PDF', href: '#' },
       { label: 'arXiv', href: 'https://arxiv.org/abs/0000.00004' },
@@ -196,6 +198,8 @@ export const publications: Publication[] = [
     venueLong: 'Annual Meeting of the Association for Computational Linguistics',
     year: 2023,
     kind: 'conference',
+    summary:
+      'Distilling an encoder at one sequence length and deploying it at another costs three points. Training the student on a length schedule recovers them.',
     links: [
       { label: 'PDF', href: '#' },
       { label: 'Code', href: 'https://github.com/example/length-adaptive' },
@@ -215,6 +219,8 @@ export const publications: Publication[] = [
     venueLong: 'Workshop on Efficient Natural Language and Speech Processing',
     year: 2023,
     kind: 'workshop',
+    summary:
+      'Six of 4096 channels carry activations two orders of magnitude larger than the rest. Keeping those six in 16 bits is most of what per-channel quantization buys you.',
     links: [{ label: 'PDF', href: '#' }],
     bibtex: `@inproceedings{rivera2023outlier,
   title     = {A Small Study of Outlier Channels in 4-Bit Transformers},
@@ -231,6 +237,8 @@ export const publications: Publication[] = [
     venueLong: 'Workshop on Machine Learning at the Edge',
     year: 2022,
     kind: 'workshop',
+    summary:
+      'My undergraduate thesis work: on six phones, transformer latency tracked memory bandwidth rather than FLOPs, by a wide margin.',
     links: [{ label: 'PDF', href: '#' }],
     bibtex: `@inproceedings{rivera2022profiling,
   title     = {Profiling Memory Bottlenecks in On-Device Transformers},
