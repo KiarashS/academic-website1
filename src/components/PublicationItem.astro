@@ -2,6 +2,7 @@
 import type { Publication } from '../data/publications';
 import { site } from '../data/site';
 import Icon from './Icon.astro';
+import { url } from '../lib/url';
 
 interface Props {
   pub: Publication;
@@ -54,7 +55,7 @@ const hasEqual = authors.some((a) => a.equal);
     <div class="actions">
       {
         (pub.links ?? []).map((link) => (
-          <a href={link.href} target={link.href.startsWith('http') ? '_blank' : undefined} rel="noopener">
+          <a href={url(link.href)} target={link.href.startsWith('http') ? '_blank' : undefined} rel="noopener">
             {link.label}
             {link.href.startsWith('http') && <Icon name="external" size={11} />}
           </a>

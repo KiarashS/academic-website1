@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import PageHeader from '../components/PageHeader.astro';
 import Icon from '../components/Icon.astro';
 import { projects } from '../data/projects';
+import { url } from '../lib/url';
 ---
 
 <Base
@@ -38,7 +39,7 @@ import { projects } from '../data/projects';
               <div class="actions">
                 {project.links.map((link) => (
                   <a
-                    href={link.href}
+                    href={url(link.href)}
                     target={link.href.startsWith('http') ? '_blank' : undefined}
                     rel="noopener"
                   >

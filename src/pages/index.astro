@@ -13,6 +13,7 @@ import { news } from '../data/news';
 import { talks } from '../data/talks';
 import { projects } from '../data/projects';
 import { teaching } from '../data/teaching';
+import { url } from '../lib/url';
 
 const selected = publications.filter((p) => p.selected).slice(0, 4);
 const recentNews = news.slice(0, 5);
@@ -86,7 +87,7 @@ const fmt = (iso: string) =>
     <div class="portrait-col" data-reveal>
       <div class="portrait-frame">
         <img
-          src={site.portrait}
+          src={url(site.portrait)}
           width="440"
           height="520"
           alt={`Portrait of ${site.name}`}
@@ -138,7 +139,7 @@ const fmt = (iso: string) =>
       </div>
       <div>
         <dt class="label">Full record</dt>
-        <dd><a class="ul" href="/cv/">Curriculum vitae</a></dd>
+        <dd><a class="ul" href={url('/cv/')}>Curriculum vitae</a></dd>
       </div>
     </dl>
   </section>
@@ -168,7 +169,7 @@ const fmt = (iso: string) =>
   <!-- ========================= SELECTED =========================== -->
   <section class="section shell">
     <SectionTitle index="02" title="Selected work">
-      <a slot="aside" class="arrow-link" href="/publications/">
+      <a slot="aside" class="arrow-link" href={url('/publications/')}>
         All {publications.length}
         <Icon name="arrow" size={15} />
       </a>
@@ -189,7 +190,7 @@ const fmt = (iso: string) =>
           <li data-reveal style={`transition-delay:${i * 60}ms`}>
             <time class="label" datetime={item.date}>{fmt(item.date)}</time>
             <p>
-              {item.href ? <a class="ul" href={item.href}>{item.text}</a> : item.text}
+              {item.href ? <a class="ul" href={url(item.href)}>{item.text}</a> : item.text}
             </p>
           </li>
         ))

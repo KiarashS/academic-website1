@@ -2,6 +2,7 @@
 import { nav, site } from '../data/site';
 import ProfileLinks from './ProfileLinks.astro';
 import AttentionGrid from './AttentionGrid.astro';
+import { url } from '../lib/url';
 
 const buildDate = new Date();
 const updated = buildDate.toLocaleDateString('en-GB', {
@@ -29,7 +30,7 @@ const year = buildDate.getFullYear();
       <nav aria-label="Footer">
         <p class="label">Pages</p>
         <ul>
-          {nav.map((item) => <li><a class="ul" href={item.href}>{item.label}</a></li>)}
+          {nav.map((item) => <li><a class="ul" href={url(item.href)}>{item.label}</a></li>)}
         </ul>
       </nav>
 

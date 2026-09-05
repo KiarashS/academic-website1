@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
+import { url } from '../lib/url';
 ---
 
 <Base title="Page not found">
@@ -11,7 +12,7 @@ import Icon from '../components/Icon.astro';
       Papers keep their URLs, so an old link to one should still work. Everything else is one
       click away.
     </p>
-    <a class="arrow-link" href="/">
+    <a class="arrow-link" href={url('/')}>
       Back to the home page
       <Icon name="arrow" size={15} />
     </a>

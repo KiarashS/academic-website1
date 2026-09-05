@@ -1,6 +1,7 @@
 ---
 import { nav, site } from '../data/site';
 import ThemeToggle from './ThemeToggle.astro';
+import { url } from '../lib/url';
 
 interface Props {
   /** Page opens on a dark band; the header floats over it until scrolled. */
@@ -8,8 +9,13 @@ interface Props {
 }
 
 const { band = false } = Astro.props;
+// Astro.url.pathname includes the base, so compare against resolved hrefs.
 const path = Astro.url.pathname;
-const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+const home = url('/');
+const isActive = (href: string) => {
+  const target = url(href);
+  return href === '/' ? path === home : path.startsWith(target);
+};
 const initials = site.name
   .split(' ')
   .map((w) => w[0])
@@ -18,7 +24,7 @@ const initials = site.name
 
 <header class:list={['site-header', { 'on-band': band }]} data-band={band ? 'true' : undefined}>
   <div class="shell bar">
-    <a class="brand" href="/">
+    <a class="brand" href={url('/')}>
       <span class="mark" aria-hidden="true">{initials}</span>
       <span class="brand-name">{site.name}</span>
     </a>
@@ -28,7 +34,7 @@ const initials = site.name
         {
           nav.map((item) => (
             <li>
-              <a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>
+              <a href={url(item.href)} aria-current={isActive(item.href) ? 'page' : undefined}>
                 <span>{item.label}</span>
               </a>
             </li>

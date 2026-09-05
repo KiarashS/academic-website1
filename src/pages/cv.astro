@@ -5,6 +5,7 @@ import { site } from '../data/site';
 import { education, experience, awards, service, skills, type Entry } from '../data/cv';
 import { publications, kindLabels, type PubKind } from '../data/publications';
 import { teaching } from '../data/teaching';
+import { url } from '../lib/url';
 
 const order: PubKind[] = ['journal', 'conference', 'preprint', 'workshop', 'thesis'];
 const grouped = order
@@ -30,12 +31,12 @@ const authorLine = (authors: string[]) => authors.join(', ');
           <span class="tick" aria-hidden="true">/</span>
           <span>{site.location}</span>
           <span class="tick" aria-hidden="true">/</span>
-          <a href={site.url}>{site.url.replace('https://', '')}</a>
+          <a href={url('/')}>{site.url.replace('https://', '')}</a>
         </p>
       </div>
 
       <div class="cv-actions no-print">
-        <a class="btn" href={site.cvPdf} download>
+        <a class="btn" href={url(site.cvPdf)} download>
           <Icon name="file" size={15} />
           PDF
         </a>
@@ -93,7 +94,7 @@ const authorLine = (authors: string[]) => authors.join(', ');
       <p class="muted note">
         Authors are listed in contribution order; * marks equal contribution. The same list
         with PDFs, code and BibTeX is on the{' '}
-        <a href="/publications/">publications page</a>.
+        <a href={url('/publications/')}>publications page</a>.
       </p>
       {
         grouped.map((group) => (

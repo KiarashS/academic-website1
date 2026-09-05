@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://alexrivera.example/sitemap-index.xml
+Sitemap: https://kiarashs.github.io/academic-website1/sitemap-index.xml

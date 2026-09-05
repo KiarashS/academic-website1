@@ -13,7 +13,7 @@ export const site = {
   advisor: { name: 'Elena Marsh', href: 'https://example.edu/~marsh' },
   email: 'arivera@cs.northwood.edu',
   // Used for canonical URLs, Open Graph and the sitemap.
-  url: 'https://alexrivera.example',
+  url: 'https://kiarashs.github.io/academic-website1',
   description:
     'Alex Rivera is a PhD candidate at Northwood University working on efficient machine learning: sparse attention, low-bit quantization and long-context inference.',
   portrait: '/portrait.svg',

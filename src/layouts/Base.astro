@@ -8,6 +8,7 @@ import { ClientRouter } from 'astro:transitions';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { site } from '../data/site';
+import { url } from '../lib/url';
 
 interface Props {
   title?: string;
@@ -31,8 +32,10 @@ const pageTitle = !title
     ? title
     : `${title} · ${site.name}`;
 
-const canonical = new URL(Astro.url.pathname, Astro.site ?? site.url).href;
-const ogImage = new URL('/og.png', Astro.site ?? site.url).href;
+// Astro.url.pathname already carries the base, so it joins straight onto the origin.
+const origin = Astro.site ?? new URL(site.url);
+const canonical = new URL(Astro.url.pathname, origin).href;
+const ogImage = new URL(url('/og.png'), origin).href;
 
 const personSchema = {
   '@context': 'https://schema.org',
@@ -41,7 +44,7 @@ const personSchema = {
   jobTitle: site.tagline,
   affiliation: { '@type': 'Organization', name: site.affiliation },
   email: `mailto:${site.email}`,
-  url: site.url,
+  url: new URL(url('/'), origin).href,
   knowsAbout: site.interests,
 };
 ---
@@ -54,8 +57,8 @@ const personSchema = {
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="icon" href={url('/favicon.svg')} type="image/svg+xml" />
+    <link rel="sitemap" href={url('/sitemap-index.xml')} />
     <meta name="author" content={site.name} />
     <meta name="color-scheme" content="light dark" />
     <meta name="theme-color" content="#16140f" />

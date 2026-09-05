@@ -4,6 +4,7 @@ import PageHeader from '../components/PageHeader.astro';
 import SectionTitle from '../components/SectionTitle.astro';
 import Icon from '../components/Icon.astro';
 import { teaching, mentoring } from '../data/teaching';
+import { url } from '../lib/url';
 ---
 
 <Base
@@ -42,7 +43,7 @@ import { teaching, mentoring } from '../data/teaching';
                 {course.detail && <p class="muted">{course.detail}</p>}
                 {course.href && (
                   <div class="actions">
-                    <a href={course.href}>
+                    <a href={url(course.href)}>
                       Course page
                       <Icon name="external" size={11} />
                     </a>

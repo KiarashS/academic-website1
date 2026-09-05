@@ -63,8 +63,9 @@ every `bibtex` field into one downloadable file.
 ## What to change first
 
 1. `src/data/site.ts` — name, email, affiliation, links. The `url` field feeds
-   canonical tags, Open Graph and the sitemap, so set it to your real domain.
-2. `astro.config.mjs` — the same domain, again, in `site`.
+   the JSON-LD block and the address printed on the CV.
+2. `astro.config.mjs` — `site` (the origin) and `base` (the sub-path). See
+   **Deploying** below; getting these wrong is what breaks the stylesheet.
 3. `public/robots.txt` — the sitemap URL.
 4. `public/portrait.svg` — replace with a real photo (`portrait.jpg` works; update
    `site.portrait`). Around 880×1040 covers retina at the size it renders. It is
@@ -125,12 +126,28 @@ everything regardless, and `prefers-reduced-motion` turns the whole thing off.
 on every push to `main`. Enable it under Settings → Pages → Source → GitHub
 Actions.
 
-If you serve the site from `https://<user>.github.io/<repo>/` rather than a
-custom domain, add `base: '/<repo>'` to `astro.config.mjs`; otherwise every
-absolute link will point at the wrong place.
+**`site` and `base` have to match where the site is actually served from.** A
+GitHub Pages *project* site lives under a sub-path, and if `base` is unset every
+stylesheet, script and image resolves against the domain root and 404s — the page
+renders as unstyled HTML.
 
-Netlify, Cloudflare Pages and Vercel all work with no configuration: build
-command `npm run build`, output directory `dist`.
+```js
+// https://<user>.github.io/<repo>/
+site: 'https://<user>.github.io',
+base: '/<repo>',
+
+// https://example.com/ — a custom domain, or a <user>.github.io user site
+site: 'https://example.com',
+// drop `base` entirely
+```
+
+Astro rewrites the URLs it generates itself (bundled CSS, JS, fonts) but not
+hrefs written by hand in templates, so every internal link in this project goes
+through `url()` in `src/lib/url.ts`. Keep using it for links you add and moving
+between the two layouts stays a one-line change.
+
+Netlify, Cloudflare Pages and Vercel serve from the domain root: set `site` and
+remove `base`. Build command `npm run build`, output directory `dist`.
 
 ## Licence
 

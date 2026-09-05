@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import PageHeader from '../components/PageHeader.astro';
 import Icon from '../components/Icon.astro';
 import { talks } from '../data/talks';
+import { url } from '../lib/url';
 
 const kindLabel: Record<string, string> = {
   invited: 'Invited',
@@ -63,7 +64,7 @@ const fmt = (iso: string) =>
                   {talk.links && (
                     <div class="actions">
                       {talk.links.map((link) => (
-                        <a href={link.href}>{link.label}</a>
+                        <a href={url(link.href)}>{link.label}</a>
                       ))}
                     </div>
                   )}
