@@ -1,0 +1,116 @@
+---
+import { nav, site } from '../data/site';
+import ProfileLinks from './ProfileLinks.astro';
+
+const buildDate = new Date();
+const updated = buildDate.toLocaleDateString('en-GB', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+});
+const year = buildDate.getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="shell">
+    <div class="grid">
+      <div class="about">
+        <p class="serif">{site.name}</p>
+        <p class="muted small">{site.affiliation}</p>
+        <p class="small">
+          <a href={`mailto:${site.email}`}>{site.email}</a>
+        </p>
+      </div>
+
+      <nav aria-label="Footer">
+        <p class="eyebrow">Pages</p>
+        <ul>
+          {nav.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+        </ul>
+      </nav>
+
+      <div>
+        <p class="eyebrow">Elsewhere</p>
+        <ProfileLinks variant="plain" />
+      </div>
+    </div>
+
+    <div class="baseline">
+      <p class="small faint">© {year} {site.name}. Built with Astro. Text under CC&nbsp;BY&nbsp;4.0.</p>
+      <p class="small faint">Last updated {updated}</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--rule);
+    background: var(--paper-sunk);
+    padding-block: 3rem 2rem;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr 1fr;
+    gap: 2.5rem;
+  }
+
+  .serif {
+    font-family: var(--font-serif);
+    font-size: 1.2rem;
+    font-variation-settings: 'opsz' 18;
+  }
+
+  .small {
+    font-size: 0.83rem;
+  }
+
+  .about p + p {
+    margin-top: 0.3rem;
+  }
+
+  nav ul,
+  .grid ul {
+    list-style: none;
+    padding: 0;
+    margin: 0.7rem 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-size: 0.83rem;
+  }
+
+  .grid a {
+    text-decoration: none;
+    color: var(--ink-soft);
+  }
+
+  .grid a:hover {
+    color: var(--accent);
+  }
+
+  .eyebrow + :global(*) {
+    margin-top: 0.7rem;
+  }
+
+  .baseline {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem 2rem;
+    margin-top: 2.75rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--rule);
+  }
+
+  @media (max-width: 47rem) {
+    .grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem 1.5rem;
+    }
+
+    .about {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

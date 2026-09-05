@@ -1,0 +1,361 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import ProfileLinks from '../components/ProfileLinks.astro';
+import PublicationItem from '../components/PublicationItem.astro';
+import { site } from '../data/site';
+import { threads } from '../data/research';
+import { publications } from '../data/publications';
+import { news } from '../data/news';
+
+const selected = publications.filter((p) => p.selected).slice(0, 4);
+const recentNews = news.slice(0, 5);
+
+const fmt = (iso: string) =>
+  new Date(iso).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+---
+
+<Base>
+  <!-- ------------------------------------------------------------------ -->
+  <section class="hero">
+    <div class="shell hero-grid">
+      <div class="hero-text">
+        <p class="eyebrow">{site.tagline} · {site.location}</p>
+
+        <h1>{site.name}</h1>
+
+        <p class="lede">
+          I work on making large models cheaper to run after training: sparse attention,
+          low-bit weights, and caches that do not grow without bound.
+        </p>
+
+        <p class="intro muted">
+          Fourth-year PhD candidate at {site.institution}, advised by{' '}
+          <a href={site.advisor.href}>{site.advisor.name}</a>. Before Northwood I read computer
+          science and mathematics at Ashfield College. This autumn I am at Halcyon Labs, writing
+          inference kernels for long-context serving.
+        </p>
+
+        <div class="hero-links">
+          <ProfileLinks />
+        </div>
+      </div>
+
+      <div class="portrait-wrap">
+        <div class="portrait-plate" aria-hidden="true"></div>
+        <img
+          class="portrait"
+          src={site.portrait}
+          width="440"
+          height="520"
+          alt={`Portrait of ${site.name}`}
+        />
+        <p class="portrait-caption faint mono">Northwood, MA · 2026</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------------------ -->
+  <section class="shell section">
+    <div class="section-head">
+      <h2>What I work on</h2>
+      <p class="eyebrow">Research</p>
+    </div>
+
+    <ol class="threads">
+      {
+        threads.map((thread, i) => (
+          <li class="thread">
+            <span class="numeral" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+            <h3>{thread.title}</h3>
+            <p class="muted">{thread.blurb}</p>
+            <ul class="keywords">
+              {thread.keywords.map((k) => <li class="pill">{k}</li>)}
+            </ul>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <!-- ------------------------------------------------------------------ -->
+  <section class="shell section">
+    <div class="section-head">
+      <h2>Selected work</h2>
+      <a class="arrow-link" href="/publications/">
+        All {publications.length} publications
+        <Icon name="arrow" size={15} />
+      </a>
+    </div>
+
+    <div class="pub-list">
+      {selected.map((pub) => <PublicationItem pub={pub} />)}
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------------------ -->
+  <section class="shell section">
+    <div class="section-head">
+      <h2>News</h2>
+      <p class="eyebrow">Updated {fmt(news[0]!.date)}</p>
+    </div>
+
+    <ul class="news">
+      {
+        recentNews.map((item) => (
+          <li>
+            <time class="mono" datetime={item.date}>{fmt(item.date)}</time>
+            <p>
+              {item.href ? <a href={item.href}>{item.text}</a> : item.text}
+            </p>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <!-- ------------------------------------------------------------------ -->
+  <section class="shell section contact">
+    <p class="eyebrow">Contact</p>
+    <h2>Say hello</h2>
+    <p class="lede">
+      I read everything sent to my university address. Happy to talk about efficient
+      inference, to share code or data from any of the papers, or to give feedback on a
+      draft if I have the time.
+    </p>
+    <a class="mailto" href={`mailto:${site.email}`}>
+      {site.email}
+      <Icon name="arrow" size={22} />
+    </a>
+    <p class="faint small">
+      Prospective students: I do not admit students, but Prof. Marsh takes one or two a year.
+    </p>
+  </section>
+</Base>
+
+<style>
+  /* ---- Hero ---- */
+  .hero {
+    padding-block: clamp(2.5rem, 7vw, 5.5rem) clamp(2rem, 5vw, 3.5rem);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.7fr) minmax(0, 0.8fr);
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: start;
+  }
+
+  h1 {
+    margin-top: 0.8rem;
+    font-size: clamp(2.9rem, 8vw, 5rem);
+    font-variation-settings: 'opsz' 48;
+    line-height: 0.98;
+    letter-spacing: -0.028em;
+  }
+
+  .lede {
+    margin-top: 1.4rem;
+    max-width: 34ch;
+    color: var(--ink);
+  }
+
+  .intro {
+    margin-top: 1.1rem;
+    max-width: 58ch;
+    font-size: 0.95rem;
+  }
+
+  .hero-links {
+    margin-top: 1.8rem;
+  }
+
+  .portrait-wrap {
+    position: relative;
+    padding-top: 0.5rem;
+  }
+
+  .portrait {
+    position: relative;
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+    border: 1px solid var(--rule-strong);
+    background: var(--paper-2);
+  }
+
+  /* Offset plate behind the portrait — cheap depth, no drop shadow. */
+  .portrait-plate {
+    position: absolute;
+    inset: -0.35rem -0.85rem 1.6rem 0.85rem;
+    border: 1px solid var(--accent-edge);
+    border-radius: 4px;
+    background: var(--accent-wash);
+  }
+
+  .portrait-caption {
+    margin-top: 0.7rem;
+    font-size: 0.72rem;
+    text-align: right;
+  }
+
+  /* ---- Research threads ---- */
+  .threads {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .thread {
+    background: var(--paper);
+    padding: 1.6rem 1.5rem 1.5rem;
+    transition: background 0.2s var(--ease);
+  }
+
+  .thread:hover {
+    background: var(--paper-sunk);
+  }
+
+  .numeral {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    font-variation-settings: 'opsz' 20;
+    color: var(--accent);
+    opacity: 0.65;
+  }
+
+  .thread h3 {
+    margin-top: 0.5rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .thread p {
+    font-size: 0.92rem;
+  }
+
+  .keywords {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    list-style: none;
+    padding: 0;
+    margin: 1.1rem 0 0;
+  }
+
+  /* ---- Publications ---- */
+  .pub-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .pub-list > :global(* + *) {
+    border-top: 1px solid var(--rule);
+  }
+
+  /* ---- News ---- */
+  .news {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-width: 72ch;
+  }
+
+  .news li {
+    display: grid;
+    grid-template-columns: 7.5rem 1fr;
+    gap: 1.5rem;
+    padding: 0.85rem 0;
+    border-bottom: 1px dashed var(--rule);
+  }
+
+  .news li:first-child {
+    border-top: 1px dashed var(--rule);
+  }
+
+  .news time {
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+    padding-top: 0.15rem;
+    white-space: nowrap;
+  }
+
+  .news p {
+    font-size: 0.94rem;
+  }
+
+  /* ---- Contact ---- */
+  .contact .lede {
+    max-width: 54ch;
+    margin-top: 1rem;
+    color: var(--ink-soft);
+  }
+
+  .contact h2 {
+    margin-top: 0.6rem;
+  }
+
+  .mailto {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-top: 1.6rem;
+    font-family: var(--font-serif);
+    font-size: clamp(1.4rem, 3.4vw, 2.1rem);
+    font-variation-settings: 'opsz' 24;
+    letter-spacing: -0.015em;
+    text-decoration: none;
+    color: var(--accent);
+    border-bottom: 1px solid var(--accent-edge);
+    padding-bottom: 0.15rem;
+  }
+
+  .mailto :global(svg) {
+    transition: transform 0.2s var(--ease);
+  }
+
+  .mailto:hover :global(svg) {
+    transform: translateX(5px);
+  }
+
+  .small {
+    font-size: 0.83rem;
+    margin-top: 1.4rem;
+  }
+
+  /* ---- Responsive ---- */
+  @media (max-width: 58rem) {
+    .threads {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 52rem) {
+    .hero-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .portrait-wrap {
+      max-width: 15rem;
+      margin-top: 1rem;
+    }
+
+    .portrait-caption {
+      text-align: left;
+    }
+  }
+
+  @media (max-width: 40rem) {
+    .news li {
+      grid-template-columns: 1fr;
+      gap: 0.25rem;
+    }
+  }
+</style>

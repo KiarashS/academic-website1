@@ -1,0 +1,81 @@
+---
+import Icon from './Icon.astro';
+import { profileLinks } from '../data/site';
+
+interface Props {
+  variant?: 'chips' | 'plain';
+}
+
+const { variant = 'chips' } = Astro.props;
+---
+
+<ul class:list={['links', variant]}>
+  {
+    profileLinks.map((link) => (
+      <li>
+        <a
+          href={link.href}
+          rel={link.href.startsWith('http') ? 'me noopener' : undefined}
+          target={link.href.startsWith('http') ? '_blank' : undefined}
+        >
+          <Icon name={link.icon} size={15} />
+          <span>{link.label}</span>
+        </a>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.83rem;
+    font-weight: 450;
+    text-decoration: none;
+    color: var(--ink-soft);
+    transition:
+      color 0.15s var(--ease),
+      border-color 0.15s var(--ease),
+      background 0.15s var(--ease),
+      transform 0.15s var(--ease);
+  }
+
+  .chips a {
+    padding: 0.4rem 0.8rem 0.4rem 0.65rem;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    background: var(--paper-2);
+  }
+
+  .chips a:hover {
+    color: var(--accent);
+    border-color: var(--accent-edge);
+    background: var(--accent-wash);
+    transform: translateY(-1px);
+  }
+
+  .plain {
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .plain a:hover {
+    color: var(--accent);
+  }
+
+  a :global(svg) {
+    flex: none;
+    opacity: 0.75;
+  }
+</style>

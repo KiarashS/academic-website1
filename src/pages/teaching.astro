@@ -1,0 +1,180 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import Icon from '../components/Icon.astro';
+import { teaching, mentoring } from '../data/teaching';
+---
+
+<Base
+  title="Teaching"
+  description="Courses taught and assisted by Alex Rivera at Northwood University, plus undergraduate and master's mentoring."
+>
+  <PageHeader
+    eyebrow="Teaching & mentoring"
+    title="Teaching"
+    lede="Five semesters in the classroom, one course co-designed from scratch. Course materials I wrote are linked where the department allows it."
+  />
+
+  <div class="shell">
+    <section class="section">
+      <div class="section-head">
+        <h2>Courses</h2>
+        <p class="eyebrow">Northwood University</p>
+      </div>
+
+      <ul class="courses">
+        {
+          teaching.map((course) => (
+            <li>
+              <div class="term">
+                <span class="mono">{course.term}</span>
+              </div>
+              <div>
+                <div class="head">
+                  <h3>
+                    {course.code !== '—' && <span class="code mono">{course.code}</span>}
+                    {course.title}
+                  </h3>
+                  <span class="pill pill--accent">{course.role}</span>
+                </div>
+                {course.detail && <p class="muted detail">{course.detail}</p>}
+                {course.href && (
+                  <div class="actions">
+                    <a href={course.href}>
+                      Course page
+                      <Icon name="external" size={12} />
+                    </a>
+                  </div>
+                )}
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2>Mentoring</h2>
+      </div>
+
+      <ul class="mentees">
+        {
+          mentoring.map((person) => (
+            <li>
+              <p class="name">{person.name}</p>
+              <p class="muted">{person.detail}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2>How I teach</h2>
+      </div>
+      <div class="prose muted">
+        <p>
+          Efficiency is a subject people learn by measuring, not by reading. In CS 6480 every
+          unit ends with a lab where students profile a real model on real hardware and have to
+          explain a number that surprised them. Half of them discover that their clever kernel
+          is slower than the baseline, which is the point.
+        </p>
+        <p>
+          I write my own assignment solutions before releasing the assignment, and I keep the
+          autograder's failure messages specific enough to act on. Office hours are for
+          debugging out loud.
+        </p>
+      </div>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .courses,
+  .mentees {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .courses li {
+    display: grid;
+    grid-template-columns: 8rem 1fr;
+    gap: 1.5rem;
+    padding: 1.4rem 0;
+    border-top: 1px solid var(--rule);
+  }
+
+  .term span {
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+  }
+
+  .head {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.5rem 0.8rem;
+  }
+
+  h3 {
+    font-size: 1.15rem;
+    font-variation-settings: 'opsz' 18;
+  }
+
+  .code {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--accent);
+    margin-right: 0.5rem;
+  }
+
+  .detail {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    max-width: 62ch;
+  }
+
+  .actions {
+    margin-top: 0.7rem;
+  }
+
+  .mentees {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+  }
+
+  .mentees li {
+    padding: 1.25rem;
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    background: var(--paper-2);
+  }
+
+  .name {
+    font-family: var(--font-serif);
+    font-size: 1.05rem;
+    font-variation-settings: 'opsz' 16;
+    margin-bottom: 0.4rem;
+  }
+
+  .mentees .muted {
+    font-size: 0.87rem;
+  }
+
+  @media (max-width: 52rem) {
+    .mentees {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 40rem) {
+    .courses li {
+      grid-template-columns: 1fr;
+      gap: 0.4rem;
+    }
+  }
+</style>

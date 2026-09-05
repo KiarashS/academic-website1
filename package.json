@@ -1,0 +1,33 @@
+{
+  "name": "academic-website",
+  "version": "0.1.0",
+  "description": "Personal academic website built with Astro",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KiarashS/academic-website1.git"
+  },
+  "bugs": {
+    "url": "https://github.com/KiarashS/academic-website1/issues"
+  },
+  "homepage": "https://github.com/KiarashS/academic-website1#readme",
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.4",
+    "@fontsource-variable/inter": "^5.3.0",
+    "@fontsource-variable/newsreader": "^5.3.0",
+    "astro": "^7.3.1"
+  },
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "sharp": "^0.35.4",
+    "typescript": "^6.0.3"
+  }
+}

@@ -1,0 +1,71 @@
+---
+export type IconName =
+  | 'mail'
+  | 'scholar'
+  | 'orcid'
+  | 'github'
+  | 'arxiv'
+  | 'bluesky'
+  | 'file'
+  | 'arrow'
+  | 'external'
+  | 'sun'
+  | 'moon'
+  | 'copy'
+  | 'check'
+  | 'pin'
+  | 'calendar'
+  | 'menu'
+  | 'close';
+
+interface Props {
+  name: IconName;
+  size?: number | string;
+  class?: string;
+}
+
+const { name, size = 16, class: className } = Astro.props;
+
+// Stroke icons on a 24x24 grid, except `github`, which is the official mark.
+const stroke: Partial<Record<IconName, string>> = {
+  mail: '<rect x="2.5" y="4.5" width="19" height="15" rx="2.5"/><path d="m3 7 8.2 5.6a1.5 1.5 0 0 0 1.6 0L21 7"/>',
+  scholar: '<path d="M12 3.5 1.8 8.6 12 13.7l10.2-5.1z"/><path d="M5.6 10.6v4.9c0 1.9 2.9 3.4 6.4 3.4s6.4-1.5 6.4-3.4v-4.9"/><path d="M21.6 9v5.4"/>',
+  orcid: '<circle cx="12" cy="12" r="9.2"/><path d="M9 10v6"/><circle cx="9" cy="7.6" r=".9"/><path d="M12.6 16V10h1.9a3 3 0 0 1 0 6z"/>',
+  arxiv: '<path d="M6.5 3.5h7L18.5 8v12.5h-12z"/><path d="M13.5 3.5V8h5"/><path d="M9.2 12.2h6.1M9.2 15.4h4.2"/>',
+  bluesky: '<path d="M12 10.4C10.9 8.2 8 4.4 5.4 3.4 2.9 2.5 2 3.4 2 5.2c0 1.8 1 6 1.6 6.8.6.8 1.8 1 3.4.8-2.3.4-3 1.9-1.9 3.5 2.1 3 4.9 1.4 6.9-2.6 2 4 4.8 5.6 6.9 2.6 1.1-1.6.4-3.1-1.9-3.5 1.6.2 2.8 0 3.4-.8.6-.8 1.6-5 1.6-6.8 0-1.8-.9-2.7-3.4-1.8C16 4.4 13.1 8.2 12 10.4Z"/>',
+  file: '<path d="M6.5 3.5h7L18.5 8v12.5h-12z"/><path d="M13.5 3.5V8h5"/>',
+  arrow: '<path d="M4.5 12h14"/><path d="m13 6.5 5.5 5.5-5.5 5.5"/>',
+  external: '<path d="M14 4.5h5.5V10"/><path d="M19.5 4.5 11 13"/><path d="M18.5 14.5v4a1.5 1.5 0 0 1-1.5 1.5H5.5A1.5 1.5 0 0 1 4 18.5V7a1.5 1.5 0 0 1 1.5-1.5h4"/>',
+  sun: '<circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.2 4.2l1.6 1.6M18.2 18.2l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.2 19.8l1.6-1.6M18.2 5.8l1.6-1.6"/>',
+  moon: '<path d="M20 14.4A8.5 8.5 0 0 1 9.6 4 8.5 8.5 0 1 0 20 14.4Z"/>',
+  copy: '<rect x="8.5" y="8.5" width="12" height="12" rx="2"/><path d="M15.5 5.5v-1a1 1 0 0 0-1-1h-10a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h1"/>',
+  check: '<path d="m5 12.8 4.4 4.4L19 6.5"/>',
+  pin: '<path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11Z"/><circle cx="12" cy="10" r="2.6"/>',
+  calendar: '<rect x="3.5" y="5.5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3.5v4M16 3.5v4"/>',
+  menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
+  close: '<path d="M6 6 18 18M18 6 6 18"/>',
+};
+
+const filled: Partial<Record<IconName, string>> = {
+  github:
+    '<path d="M12 .6a11.4 11.4 0 0 0-3.6 22.2c.6.1.8-.2.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.1.1 1.7 1.2 1.7 1.2 1 1.8 2.7 1.3 3.4 1 .1-.7.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.8 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.3 11.3 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.8 1.2 3.1 0 4.5-2.7 5.5-5.3 5.8.4.4.8 1.1.8 2.2v3.3c0 .4.2.7.8.6A11.4 11.4 0 0 0 12 .6Z"/>',
+};
+
+const body = filled[name] ?? stroke[name] ?? '';
+const isFilled = name in filled;
+---
+
+<svg
+  viewBox="0 0 24 24"
+  width={size}
+  height={size}
+  fill={isFilled ? 'currentColor' : 'none'}
+  stroke={isFilled ? 'none' : 'currentColor'}
+  stroke-width="1.6"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+  class={className}
+  set:html={body}
+/>

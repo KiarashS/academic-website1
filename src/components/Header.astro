@@ -1,0 +1,166 @@
+---
+import { nav, site } from '../data/site';
+import ThemeToggle from './ThemeToggle.astro';
+
+const path = Astro.url.pathname;
+const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+const initials = site.name
+  .split(' ')
+  .map((w) => w[0])
+  .join('');
+---
+
+<header class="site-header">
+  <div class="shell bar">
+    <a class="brand" href="/">
+      <span class="mark" aria-hidden="true">{initials}</span>
+      <span class="brand-name">{site.name}</span>
+    </a>
+
+    <nav aria-label="Primary">
+      <ul>
+        {
+          nav.map((item) => (
+            <li>
+              <a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <ThemeToggle />
+  </div>
+</header>
+
+<script>
+  const wire = () => {
+    const header = document.querySelector('.site-header');
+    if (!header) return;
+    const onScroll = () => header.classList.toggle('is-stuck', window.scrollY > 8);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+  };
+  wire();
+  document.addEventListener('astro:page-load', wire);
+</script>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: color-mix(in srgb, var(--paper) 82%, transparent);
+    backdrop-filter: saturate(1.4) blur(10px);
+    -webkit-backdrop-filter: saturate(1.4) blur(10px);
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s var(--ease);
+  }
+
+  .site-header.is-stuck {
+    border-bottom-color: var(--rule);
+  }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    min-height: 4rem;
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    text-decoration: none;
+    margin-right: auto;
+  }
+
+  .mark {
+    display: grid;
+    place-items: center;
+    width: 1.85rem;
+    height: 1.85rem;
+    border-radius: 7px;
+    background: var(--accent);
+    color: var(--paper);
+    font-family: var(--font-serif);
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    transition: transform 0.25s var(--ease);
+  }
+
+  .brand:hover .mark {
+    transform: rotate(-6deg);
+  }
+
+  .brand-name {
+    font-family: var(--font-serif);
+    font-size: 1.05rem;
+    font-variation-settings: 'opsz' 16;
+    letter-spacing: -0.01em;
+  }
+
+  nav ul {
+    display: flex;
+    gap: 0.15rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  nav a {
+    display: block;
+    padding: 0.35rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 450;
+    color: var(--ink-soft);
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+      color 0.15s var(--ease),
+      background 0.15s var(--ease);
+  }
+
+  nav a:hover {
+    color: var(--ink);
+    background: var(--paper-sunk);
+  }
+
+  nav a[aria-current='page'] {
+    color: var(--accent);
+    font-weight: 550;
+    background: var(--accent-wash);
+  }
+
+  @media (max-width: 47rem) {
+    .bar {
+      flex-wrap: wrap;
+      gap: 0.5rem 0.75rem;
+      padding-block: 0.7rem;
+    }
+
+    .brand-name {
+      font-size: 1rem;
+    }
+
+    nav {
+      order: 3;
+      width: 100%;
+      overflow-x: auto;
+      scrollbar-width: none;
+      margin-inline: calc(var(--gutter) * -1);
+      padding-inline: var(--gutter);
+      -webkit-mask-image: linear-gradient(90deg, transparent, #000 1.2rem, #000 calc(100% - 1.2rem), transparent);
+      mask-image: linear-gradient(90deg, transparent, #000 1.2rem, #000 calc(100% - 1.2rem), transparent);
+    }
+
+    nav::-webkit-scrollbar {
+      display: none;
+    }
+  }
+</style>

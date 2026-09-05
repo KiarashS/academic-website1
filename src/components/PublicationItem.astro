@@ -1,0 +1,282 @@
+---
+import type { Publication } from '../data/publications';
+import { site } from '../data/site';
+import Icon from './Icon.astro';
+
+interface Props {
+  pub: Publication;
+  /** Compact form for the home page: no summary, fewer links. */
+  compact?: boolean;
+}
+
+const { pub, compact = false } = Astro.props;
+
+const authors = pub.authors.map((raw) => {
+  const equal = raw.endsWith('*');
+  const name = equal ? raw.slice(0, -1) : raw;
+  return { name, equal, isMe: name === site.name };
+});
+
+const hasEqual = authors.some((a) => a.equal);
+---
+
+<article class="pub" id={pub.id}>
+  <div class="gutter">
+    <span class="year mono">{pub.year}</span>
+    <span class="dot" aria-hidden="true"></span>
+  </div>
+
+  <div class="body">
+    <div class="meta">
+      <span class="pill">{pub.venue}</span>
+      {pub.note && <span class="pill pill--accent">{pub.note}</span>}
+    </div>
+
+    <h3 class="title">{pub.title}</h3>
+
+    <p class="authors">
+      {
+        authors.map((a, i) => (
+          <>
+            {i > 0 && <span class="sep">, </span>}
+            <span class:list={['author', { me: a.isMe }]}>
+              {a.name}
+              {a.equal && <span class="star">*</span>}
+            </span>
+          </>
+        ))
+      }
+    </p>
+
+    {pub.venueLong && <p class="venue-long faint">{pub.venueLong}</p>}
+
+    {!compact && pub.summary && <p class="summary">{pub.summary}</p>}
+
+    {
+      hasEqual && !compact && (
+        <p class="equal faint">* Equal contribution.</p>
+      )
+    }
+
+    <div class="actions">
+      {
+        (pub.links ?? []).map((link) => (
+          <a href={link.href} target={link.href.startsWith('http') ? '_blank' : undefined} rel="noopener">
+            {link.label}
+            {link.href.startsWith('http') && <Icon name="external" size={12} />}
+          </a>
+        ))
+      }
+      {
+        pub.bibtex && (
+          <button type="button" class="bib-toggle" aria-expanded="false" data-bib={pub.id}>
+            BibTeX
+          </button>
+        )
+      }
+    </div>
+
+    {
+      pub.bibtex && (
+        <div class="bib" id={`bib-${pub.id}`} hidden>
+          <pre><code>{pub.bibtex}</code></pre>
+          <button type="button" class="copy" data-copy={pub.id}>
+            <Icon name="copy" size={13} />
+            <span>Copy</span>
+          </button>
+        </div>
+      )
+    }
+  </div>
+</article>
+
+<script>
+  const wire = () => {
+    document.querySelectorAll<HTMLButtonElement>('.bib-toggle').forEach((btn) => {
+      if (btn.dataset.wired) return;
+      btn.dataset.wired = 'true';
+      btn.addEventListener('click', () => {
+        const box = document.getElementById(`bib-${btn.dataset.bib}`);
+        if (!box) return;
+        const open = !box.hidden;
+        box.hidden = open;
+        btn.setAttribute('aria-expanded', String(!open));
+      });
+    });
+
+    document.querySelectorAll<HTMLButtonElement>('.copy').forEach((btn) => {
+      if (btn.dataset.wired) return;
+      btn.dataset.wired = 'true';
+      btn.addEventListener('click', async () => {
+        const text = btn.parentElement?.querySelector('code')?.textContent ?? '';
+        try {
+          await navigator.clipboard.writeText(text);
+          const label = btn.querySelector('span');
+          if (!label) return;
+          label.textContent = 'Copied';
+          setTimeout(() => (label.textContent = 'Copy'), 1600);
+        } catch {
+          /* clipboard blocked — the text is on screen anyway */
+        }
+      });
+    });
+  };
+  wire();
+  document.addEventListener('astro:page-load', wire);
+</script>
+
+<style>
+  .pub {
+    display: grid;
+    grid-template-columns: 4.5rem 1fr;
+    gap: 0 1.5rem;
+    padding: 1.5rem 1rem 1.5rem 0;
+    margin-inline: -1rem;
+    padding-left: 1rem;
+    border-radius: 10px;
+    scroll-margin-top: 6rem;
+    transition: background 0.2s var(--ease);
+  }
+
+  .pub:hover {
+    background: var(--paper-sunk);
+  }
+
+  .pub:target {
+    background: var(--accent-wash);
+  }
+
+  .gutter {
+    position: relative;
+    display: flex;
+    align-items: baseline;
+    gap: 0.55rem;
+    padding-top: 0.15rem;
+  }
+
+  .year {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--ink-faint);
+    letter-spacing: 0.02em;
+  }
+
+  .dot {
+    position: absolute;
+    right: -0.75rem;
+    top: 0.5rem;
+    width: 5px;
+    height: 5px;
+    border-radius: 999px;
+    background: var(--rule-strong);
+    transition: background 0.2s var(--ease), transform 0.2s var(--ease);
+  }
+
+  .pub:hover .dot {
+    background: var(--accent);
+    transform: scale(1.4);
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 0.55rem;
+  }
+
+  .title {
+    font-size: clamp(1.12rem, 1.6vw, 1.3rem);
+    font-variation-settings: 'opsz' 20;
+    line-height: 1.28;
+    letter-spacing: -0.008em;
+  }
+
+  .authors {
+    margin-top: 0.45rem;
+    font-size: 0.875rem;
+    color: var(--ink-soft);
+  }
+
+  .author.me {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .star {
+    color: var(--accent);
+  }
+
+  .venue-long {
+    font-size: 0.8rem;
+    margin-top: 0.15rem;
+  }
+
+  .summary {
+    margin-top: 0.7rem;
+    max-width: 60ch;
+    font-size: 0.92rem;
+    color: var(--ink-soft);
+  }
+
+  .equal {
+    margin-top: 0.5rem;
+    font-size: 0.76rem;
+  }
+
+  .actions {
+    margin-top: 0.9rem;
+  }
+
+  .bib {
+    margin-top: 0.9rem;
+    position: relative;
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    background: var(--paper-2);
+  }
+
+  .bib pre {
+    margin: 0;
+    padding: 0.9rem 1rem;
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    line-height: 1.55;
+    color: var(--ink-soft);
+  }
+
+  .copy {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.25rem 0.55rem;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    background: var(--paper);
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+  }
+
+  .copy:hover {
+    color: var(--accent);
+    border-color: var(--accent-edge);
+  }
+
+  @media (max-width: 40rem) {
+    .pub {
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+    }
+
+    .gutter {
+      padding-top: 0;
+    }
+
+    .dot {
+      display: none;
+    }
+  }
+</style>

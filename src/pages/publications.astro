@@ -1,0 +1,167 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import PublicationItem from '../components/PublicationItem.astro';
+import Icon from '../components/Icon.astro';
+import { publications, kindLabels, type PubKind } from '../data/publications';
+
+const kinds = ['conference', 'journal', 'workshop', 'preprint'] as const;
+const counts = Object.fromEntries(
+  kinds.map((k) => [k, publications.filter((p) => p.kind === k).length]),
+) as Record<PubKind, number>;
+const available = kinds.filter((k) => counts[k] > 0);
+---
+
+<Base
+  title="Publications"
+  description="Peer-reviewed papers, journal articles, workshop papers and preprints by Alex Rivera."
+>
+  <PageHeader
+    eyebrow="Publications"
+    title="Papers"
+    lede="Peer-reviewed work first, then preprints and workshop papers. Every entry links to a PDF and, where one exists, to the code and data needed to reproduce it."
+  >
+    <div class="toolbar no-print">
+      <div class="filters" role="group" aria-label="Filter by publication type">
+        <button type="button" class="chip is-on" data-filter="all" aria-pressed="true">
+          All <span class="count">{publications.length}</span>
+        </button>
+        {
+          available.map((kind) => (
+            <button type="button" class="chip" data-filter={kind} aria-pressed="false">
+              {kindLabels[kind]} <span class="count">{counts[kind]}</span>
+            </button>
+          ))
+        }
+      </div>
+
+      <a class="arrow-link" href="/publications.bib" download>
+        Download all BibTeX
+        <Icon name="arrow" size={15} />
+      </a>
+    </div>
+  </PageHeader>
+
+  <div class="shell">
+    <div class="pub-list" id="pub-list">
+      {
+        publications.map((pub) => (
+          <div class="pub-row" data-kind={pub.kind}>
+            <PublicationItem pub={pub} />
+          </div>
+        ))
+      }
+    </div>
+
+    <p class="empty faint" hidden id="empty">Nothing in that category yet.</p>
+  </div>
+</Base>
+
+<script>
+  const wire = () => {
+    const list = document.getElementById('pub-list');
+    if (!list) return;
+    const rows = Array.from(list.querySelectorAll<HTMLElement>('.pub-row'));
+    const chips = Array.from(document.querySelectorAll<HTMLButtonElement>('.chip'));
+    const empty = document.getElementById('empty');
+
+    const paint = (filter: string) => {
+      rows.forEach((row) => {
+        row.hidden = filter !== 'all' && row.dataset.kind !== filter;
+      });
+      const visible = rows.filter((r) => !r.hidden);
+      rows.forEach((r) => r.classList.remove('is-first'));
+      visible[0]?.classList.add('is-first');
+      if (empty) empty.hidden = visible.length > 0;
+    };
+
+    chips.forEach((chip) => {
+      if (chip.dataset.wired) return;
+      chip.dataset.wired = 'true';
+      chip.addEventListener('click', () => {
+        chips.forEach((c) => {
+          const on = c === chip;
+          c.classList.toggle('is-on', on);
+          c.setAttribute('aria-pressed', String(on));
+        });
+        paint(chip.dataset.filter ?? 'all');
+      });
+    });
+
+    paint('all');
+  };
+  wire();
+  document.addEventListener('astro:page-load', wire);
+</script>
+
+<style>
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem 1.5rem;
+    margin-top: 2rem;
+  }
+
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.8rem;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    background: var(--paper-2);
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+    transition:
+      color 0.15s var(--ease),
+      border-color 0.15s var(--ease),
+      background 0.15s var(--ease);
+  }
+
+  .chip:hover {
+    border-color: var(--rule-strong);
+    color: var(--ink);
+  }
+
+  .chip.is-on {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--paper);
+    font-weight: 500;
+  }
+
+  .count {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    opacity: 0.65;
+  }
+
+  .pub-list {
+    padding-block: 1rem 2rem;
+  }
+
+  .pub-row {
+    border-top: 1px solid var(--rule);
+  }
+
+  .pub-row.is-first {
+    border-top: none;
+  }
+
+  .pub-row[hidden] {
+    display: none;
+  }
+
+  .empty {
+    padding-block: 3rem 5rem;
+    font-size: 0.9rem;
+  }
+</style>
